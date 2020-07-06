@@ -5,6 +5,7 @@ Here we provide the scripts, data and results for predicting drug-viral activity
 
 We consider the SARS-COV-2 virus as a use-case and provide ranked list of drugs based on the 3 main proteases:
 
-a) 3CL-pro 
-b) PL-pro
-c) Spike protein 
+a) 3CL-pro  
+b) PL-pro  
+c) Spike protein  
+
