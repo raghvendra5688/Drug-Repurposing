@@ -25,12 +25,12 @@ c) XGBoost - scripts/svm_on_ls_protein_drug.py
 Training done on Train_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv and available at https://drive.google.com/file/d/1jsYev2WxC0N_OpNCVm-eLhsF_CMeJE9Y/view?usp=sharing  
 Testing done on Test_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv present in gz format in the data folder.
 
-For COVID-19 use case: the code is run in test mode on data/COVID_19/sars_cov_2_drug_viral_interactions_to_predict_with_LS_v2.csv  
+For COVID-19 use case the code is run in test mode on: data/COVID_19/sars_cov_2_drug_viral_interactions_to_predict_with_LS_v2.csv  
 
-Outputs:
+Outputs:  
 a) Random Forests - results/RF_supervised_test_predictions.csv and results/RF_supervised_sars_cov2_test_predictions.csv  
 b) SVM - results/SVM_supervised_test_predictions.csv and results/SVM_supervised_sars_cov2_test_predictions.csv  
-c) XGBoost - results/XGB_supervised_test_predictions.csv and results/XGB_supervised_sars_cov2_test_predictions.csv   
+c) XGB - results/XGB_supervised_test_predictions.csv and results/XGB_supervised_sars_cov2_test_predictions.csv   
 
 
 The three end-to-end deep learning models:  
