@@ -1,11 +1,51 @@
 # Drug-Repurposing
-Data Driven Drug Repurposing for COVID-19
+Data Driven Drug Repurposing for COVID-19  
 
-Here we provide the scripts, data and results for predicting drug-viral activity scores using our pipeline.
+Here we provide the scripts, data, model and results for predicting drug-viral activity scores using our pipeline.
 
 We consider the SARS-COV-2 virus as a use-case and provide ranked list of drugs based on the 3 main proteases:
 
 a) 3CL-pro  
 b) PL-pro  
 c) Spike protein  
+
+
+Code Requirements:  
+a) pandas, pickle, numpy, sklearn, scipy all of which are available in latest Anaconda package  
+b) xgboost version 0.90, shap   
+c) pytorch, torchtext, RDKIT, jupytext, cuda (for GPU)  
+
+
+The three traditional machine learning models:
+
+a) Random Forests - scripts/rf_on_ls_protein_drug.py  
+b) SVM - scripts/svm_on_ls_protein_drug.py  
+c) XGBoost - scripts/svm_on_ls_protein_drug.py
+
+Training done on Train_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv and available at https://drive.google.com/file/d/1jsYev2WxC0N_OpNCVm-eLhsF_CMeJE9Y/view?usp=sharing  
+Testing done on Test_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv present in gz format in the data folder.
+
+For COVID-19 use case: the code is run in test mode on data/COVID_19/sars_cov_2_drug_viral_interactions_to_predict_with_LS_v2.csv  
+
+Outputs:
+a) Random Forests - results/RF_supervised_test_predictions.csv and results/RF_supervised_sars_cov2_test_predictions.csv  
+b) SVM - results/SVM_supervised_test_predictions.csv and results/SVM_supervised_sars_cov2_test_predictions.csv  
+c) XGBoost - results/XGB_supervised_test_predictions.csv and results/XGB_supervised_sars_cov2_test_predictions.csv   
+
+
+The three end-to-end deep learning models:  
+
+a) CNN - scripts/torchtext_cnn_supervised_learning.py  
+b) LSTM - scripts/torchtext_lstm_supervised_learning.py  
+c) CNN_LSTM - scripts/torchtext_cnn_lstm_supervised_learning.py  
+
+Runs on test mode:  
+1. data/Test_Drug_Viral_interactions_for_Supervised_Learning.csv  
+2. data/sars_cov_2_drug_viral_interactions_to_predict.csv
+
+Ouputs:  
+a) CNN - results/cnn_supervised_test_predictions.csv and results/cnn_supervised_sars_cov_2_test_predictions.csv  
+b) LSTM - results/lstm_supervised_test_predictions.csv and results/lstm_supervised_sars_cov_2_test_predictions.csv  
+c) CNN_LSTM - results/cnn_lstm_supervised_test_predictions.csv and results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv
+
 
