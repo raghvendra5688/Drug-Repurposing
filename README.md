@@ -28,7 +28,7 @@ Testing done on Test_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.
 For COVID-19 use case the code is run in test mode on: data/COVID_19/sars_cov_2_drug_viral_interactions_to_predict_with_LS_v2.csv  
 
 Outputs:  
-a) Random Forests - results/RF_supervised_test_predictions.csv and results/RF_supervised_sars_cov2_test_predictions.csv  
+a) RF - results/RF_supervised_test_predictions.csv and results/RF_supervised_sars_cov2_test_predictions.csv  
 b) SVM - results/SVM_supervised_test_predictions.csv and results/SVM_supervised_sars_cov2_test_predictions.csv  
 c) XGB - results/XGB_supervised_test_predictions.csv and results/XGB_supervised_sars_cov2_test_predictions.csv   
 
@@ -46,6 +46,18 @@ Runs on test mode:
 Ouputs:  
 a) CNN - results/cnn_supervised_test_predictions.csv and results/cnn_supervised_sars_cov_2_test_predictions.csv  
 b) LSTM - results/lstm_supervised_test_predictions.csv and results/lstm_supervised_sars_cov_2_test_predictions.csv  
-c) CNN_LSTM - results/cnn_lstm_supervised_test_predictions.csv and results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv
+c) CNN+LSTM - results/cnn_lstm_supervised_test_predictions.csv, results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv
 
+To compare performance of methods on test set:  
+a) Install R, Librarires- ggplot2, ggthemes  
+b) Run make_error_correlation_plots.R  
+
+
+To get ranked list of drugs for SARS-COV-2 viral proteins:   
+a) Run sars_cov_2_processing.py
+
+Outputs:  
+a) 3CL-Pro - results/3CL_Pro_Top_Ranked_Drugs.csv  
+b) PL-Pro - results/PL_Pro_Top_Ranked_Drugs.csv
+c) Spike  - results/Spike_Pro_Top_Ranked_Drugs.csv
 

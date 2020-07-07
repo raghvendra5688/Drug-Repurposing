@@ -161,9 +161,10 @@ svm_gs.cv_results_
 save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("svm","svm",data_type))
 # -
 
+svm_gs = load_model("svm_models/svm__LS_Drug_LS_Protein_regressor_gs.pk")
+scaler = load_model("svm_models/svm__LS_Drug_LS_Protein_scaling_gs.pk")
 svm_best = svm_gs.best_estimator_
 y_pred_svm=svm_best.predict(X_train_copy)
-print(X_train_copy[95:110])
 plt.hist(y_pred_svm)
 
 # +

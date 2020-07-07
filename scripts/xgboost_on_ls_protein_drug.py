@@ -161,6 +161,7 @@ else:
 xgb_gs.cv_results_
 # -
 
+xgb_gs = load_model("xgb_models/xgb__LS_Drug_LS_Protein_regressor_gs.pk")
 xgb_best = xgb_gs.best_estimator_
 y_pred_xgb=xgb_best.predict(X_train)
 plt.hist(y_pred_xgb)
@@ -190,7 +191,7 @@ calculate_regression_metrics(y_test,y_pred_xgb)
 
 meta_X.loc[:,'predictions']=y_pred_xgb
 meta_X.loc[:,'labels']=y_test
-rev_output_df = meta_X.iloc[:,[0,2,4,5]]
+rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
 rev_output_df.to_csv("../results/XGB_supervised_test_predictions.csv",index=False)
 
 # +

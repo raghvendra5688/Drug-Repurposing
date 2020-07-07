@@ -172,7 +172,6 @@ save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("glm","glm",data_type))
 
 y_pred_lr=lr_gs.best_estimator_.predict(X_train_copy)
 plt.hist(y_pred_lr)
-print(X_train_copy[95:110])
 
 # +
 if classification_task:
@@ -213,6 +212,7 @@ else:
 rf_gs.cv_results_
 
 # +
+rf_gs = load_model("rf_models/rf__LS_Drug_LS_Protein_regressor_gs.pk")
 np.max(rf_gs.cv_results_["mean_test_score"])
 filename = "../data/Test_Drug_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv"
 with open(filename, "rb") as file:
@@ -237,7 +237,7 @@ calculate_regression_metrics(y_test,y_pred_rf)
 
 meta_X.loc[:,'predictions']=y_pred_rf
 meta_X.loc[:,'labels']=y_test
-rev_output_df = meta_X.iloc[:,[0,2,4,5]]
+rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
 rev_output_df.to_csv("../results/RF_supervised_test_predictions.csv",index=False)
 
 plt.hist(y_pred_rf)
@@ -262,8 +262,3 @@ meta_X_test = big_X_test.iloc[:,[0,2]].copy()
 meta_X_test.loc[:,'predictions']=y_pred
 meta_X_test.loc[:,'labels']=0
 meta_X_test.to_csv("../results/RF_supervised_sars_cov2_additional_test_predictions.csv",index=False)
-# -
-
-
-
-
