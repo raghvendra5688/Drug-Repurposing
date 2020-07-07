@@ -37,7 +37,7 @@ The three end-to-end deep learning models:
 
 a) CNN - scripts/torchtext_cnn_supervised_learning.py  
 b) LSTM - scripts/torchtext_lstm_supervised_learning.py  
-c) CNN_LSTM - scripts/torchtext_cnn_lstm_supervised_learning.py  
+c) CNN-LSTM - scripts/torchtext_cnn_lstm_supervised_learning.py  
 
 Runs on test mode:  
 1. data/Test_Drug_Viral_interactions_for_Supervised_Learning.csv  
@@ -46,7 +46,7 @@ Runs on test mode:
 Ouputs:  
 a) CNN - results/cnn_supervised_test_predictions.csv and results/cnn_supervised_sars_cov_2_test_predictions.csv  
 b) LSTM - results/lstm_supervised_test_predictions.csv and results/lstm_supervised_sars_cov_2_test_predictions.csv  
-c) CNN+LSTM - results/cnn_lstm_supervised_test_predictions.csv, results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv
+c) CNN-LSTM - results/cnn_lstm_supervised_test_predictions.csv, results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv
 
 To compare performance of methods on test set:  
 a) Install R, Librarires- ggplot2, ggthemes  
@@ -58,6 +58,6 @@ a) Run sars_cov_2_processing.py
 
 Outputs:  
 a) 3CL-Pro - results/3CL_Pro_Top_Ranked_Drugs.csv  
-b) PL-Pro - results/PL_Pro_Top_Ranked_Drugs.csv
-c) Spike  - results/Spike_Pro_Top_Ranked_Drugs.csv
+b) PL-Pro - results/PL_Pro_Top_Ranked_Drugs.csv  
+c) Spike  - results/Spike_Pro_Top_Ranked_Drugs.csv  
 
