@@ -31,3 +31,5 @@ We perform additional search on Pubmed (NCBI) to generate a good AID (Assay Id) 
 All these data are available inside the `additional_data` folder in the `Drug_Virus_Interactions` folder
 
 We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Drug_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file
+
+We run: `cd Drug_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Drug_Viral_Proteins_Network.csv`, `ncbi_Filtered_Drugs.csv` and `ncbi_drug_src_target_info.csv` files inside the `Drug_Virus_Interactions` folder.
