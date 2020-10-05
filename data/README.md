@@ -1,8 +1,8 @@
-#Drug Repurposing for COVID-19
+# Drug Repurposing for COVID-19
 
 Here we provide the details of the steps followed to prepare the data for training set, test set and sars-cov-2 dataset.
 
-#SMILES Autoencoder
+# SMILES Autoencoder
 
 1. We first collected 556,134 SMILES strings for compounds used in the paper [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111) and combined it with 1,936,962 SMILES strings obtained from MOSES dataset [Molecular Sets (MOSES): A BenchmarkingPlatform for Molecular Generation Models](https://github.com/molecularsets/moses). This file is present in the SMILES_Autoencoder/all_smiles.csv
 
