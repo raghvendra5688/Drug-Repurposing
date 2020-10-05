@@ -24,7 +24,7 @@ from torchtext.datasets import TranslationDataset, Multi30k
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from tokeniser import tokenize_drug, tokenize_protein
-from seq2func import LSTM_Encoder, CNN_Encoder, Seq2Func, init_weights, count_parameters, train, evaluate, epoch_time
+from seq2func import LSTM_Encoder, CNN_Encoder, CNN_LSTM_Encoder, Seq2Func, init_weights, count_parameters, train, evaluate, epoch_time
 
 SEED = 123
 random.seed(SEED)
@@ -37,7 +37,11 @@ torch.cuda.is_available()
 cudaid = int(0)
 DEVICE = torch.device("cuda:%d" % (cudaid) if torch.cuda.is_available() else "cpu")
 print(DEVICE)
+# +
+#Histogram of pchembl values
+#plt.hist(interaction_df["pchembl_value"],bins=10)
 # -
+
 #Define all the variables to be read by torchtext TabularDataset
 TEXT1         =  Field(sequential=True,
                           tokenize = tokenize_protein,
@@ -66,11 +70,10 @@ datafields = [('uniprot_accession',INDEX1),
               ("pchembl_value",LABEL)
              ]
 
-#Predict activity score for sars-cov-2 viral proteins
+#Make predictions on SARS-COV-2 viral proteins
 full_data, data, test_data = TabularDataset.splits(
            path="../data/", train='all_drug_viral_interactions_for_supervised_learning.csv',
-           validation = 'Train_Drug_Viral_interactions_for_Supervised_Learning.csv',
-           #test='Test_Drug_Viral_interactions_for_Supervised_Learning.csv',
+           validation='Train_Drug_Viral_interactions_for_Supervised_Learning.csv',
            test='sars_cov_2_drug_viral_interactions_to_predict.csv',
            format='csv',
            skip_header=True, # if your csv header has a header, make sure to pass this to ensure it doesn't get proceesed as data!
@@ -85,9 +88,9 @@ print("Target value: ",data.examples[0].pchembl_value)
 
 #Split the data randomly into train, valid and test
 train_data, valid_data = data.split(split_ratio=0.9,random_state=random.setstate(st))
-print('Number of training examples: ',len(train_data.examples))
-print('Number of validation examples: ',len(valid_data.examples))
-print('Number of test examples: ',len(test_data.examples))
+print(f"Number of training examples: {len(train_data.examples)}")
+print(f"Number of validation examples: {len(valid_data.examples)}")
+print(f"Number of test examples: {len(test_data.examples)}")
 #del data
 torch.cuda.empty_cache()   
 
@@ -99,9 +102,9 @@ LABEL.build_vocab(train_data, min_freq = 1)
 INDEX1.build_vocab(full_data, min_freq = 1)
 INDEX2.build_vocab(full_data, min_freq = 1)
 
-print('Unique tokens in Sequence vocabulary: ',len(TEXT1.vocab))
-print('Unique tokens in SMILES vocabulary: ',len(TEXT2.vocab))
-print('Unique tokens in LABELs vocabulary: ',len(LABEL.vocab))
+print(f"Unique tokens in Sequence vocabulary: {len(TEXT1.vocab)}")
+print(f"Unique tokens in SMILES vocabulary: {len(TEXT2.vocab)}")
+print(f"Unique tokens in LABELs vocabulary: {len(LABEL.vocab)}")
 
 SEQUENCE_PAD_IDX = TEXT1.vocab.stoi[TEXT1.pad_token]
 print("Padding Id in Sequence: ",SEQUENCE_PAD_IDX)
@@ -133,21 +136,27 @@ for i,batch in enumerate(train_iterator):
 # +
 PROTEIN_INPUT_DIM = len(TEXT1.vocab)
 PROTEIN_ENC_EMB_DIM = 64
-PROTEIN_HID_DIM = 256
-PROTEIN_OUT_DIM = 128
+PROTEIN_HID_DIM = 128
+PROTEIN_OUT_DIM = 256
+PAD_IDX1 = TEXT1.vocab.stoi[TEXT1.pad_token]
 
 SMILES_INPUT_DIM = len(TEXT2.vocab)
 SMILES_ENC_EMB_DIM = 64
-SMILES_HID_DIM = 256
-SMILES_OUT_DIM = 128
+SMILES_HID_DIM = 128
+SMILES_OUT_DIM = 256
+PAD_IDX2 = TEXT2.vocab.stoi[TEXT2.pad_token]
+
+N_FILTERS = 128
+FILTER_SIZES = [3,6,9,12]
 
 HID_DIM = 128
-OUT_DIM = 1
 N_LAYERS = 2
+OUT_DIM = 1
 DROPOUT = 0.0
 
-protein_enc = LSTM_Encoder(PROTEIN_INPUT_DIM, PROTEIN_ENC_EMB_DIM, PROTEIN_HID_DIM, PROTEIN_OUT_DIM, N_LAYERS, DROPOUT)
-smiles_enc = LSTM_Encoder(SMILES_INPUT_DIM, SMILES_ENC_EMB_DIM, SMILES_HID_DIM, SMILES_OUT_DIM, N_LAYERS, DROPOUT)
+
+protein_enc = CNN_LSTM_Encoder(PROTEIN_INPUT_DIM, PROTEIN_ENC_EMB_DIM, PROTEIN_HID_DIM, PROTEIN_OUT_DIM, N_FILTERS, FILTER_SIZES, N_LAYERS, DROPOUT, PAD_IDX1)
+smiles_enc = CNN_LSTM_Encoder(SMILES_INPUT_DIM, SMILES_ENC_EMB_DIM, SMILES_HID_DIM, SMILES_OUT_DIM, N_FILTERS, FILTER_SIZES, N_LAYERS, DROPOUT, PAD_IDX2)
 
 model = Seq2Func(protein_enc, smiles_enc, HID_DIM, OUT_DIM, DROPOUT, device=DEVICE).to(DEVICE)
 print("Total parameters in model are: ",count_parameters(model))
@@ -161,7 +170,7 @@ criterion = nn.MSELoss().to(DEVICE)
 #N_EPOCHS = 1000
 #CLIP = 1
 #counter = 0
-#patience = 400
+#patience = 200
 #train_loss_list = []
 #valid_loss_list = []
 #best_valid_loss = float('inf')
@@ -180,7 +189,7 @@ criterion = nn.MSELoss().to(DEVICE)
 #            counter = 0
 #            print("Current Val. Loss: %.3f better than prev Val. Loss: %.3f " %(valid_loss,best_valid_loss))
 #            best_valid_loss = valid_loss
-#            torch.save(model.state_dict(), 'lstm_out/lstm_supervised_checkpoint.pt')
+#            torch.save(model.state_dict(), 'cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt')
 #        else:
 #            counter+=1
 #        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
@@ -188,14 +197,14 @@ criterion = nn.MSELoss().to(DEVICE)
 #        print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
 
 
-model.load_state_dict(torch.load('../models/lstm_out/lstm_supervised_checkpoint.pt'))
+model.load_state_dict(torch.load('../models/cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt'))
 valid_loss = evaluate(model, valid_iterator, criterion)
 print(f'| Best Valid Loss: {valid_loss:.3f} | Best Valid PPL: {math.exp(valid_loss):7.3f} |')
 
 #test_loss = evaluate(model, test_iterator, criterion)
 #print(f'| Test Loss: {test_loss: .3f} | Best Test PPL: {math.exp(test_loss):7.3f} |')
 
-#fout=open("lstm_out/lstm_supervised_loss_plot.csv","w")
+#fout=open("cnn_lstm_out/cnn_lstm_supervised_loss_plot.csv","w")
 #for i in range(len(train_loss_list)):
 #    outputstring = str(train_loss_list[i])+","+str(valid_loss_list[i])+"\n"
 #    fout.write(outputstring)
@@ -231,7 +240,7 @@ with torch.no_grad():
         del trg
         torch.cuda.empty_cache()
 
-fout = open("results/lstm_supervised_sars_cov_2_test_predictions.csv","w")
+fout = open("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv","w")
 header = 'uniprot_accession,'+'standard_inchi_key,'+'predictions,'+'labels'+'\n'
 fout.write(header)
 for data in output_list:
@@ -240,7 +249,7 @@ for data in output_list:
     fout.write(temp_str+"\n")
 
 #test_df = pd.DataFrame(output_list, columns=['uniprot_accession','standard_inchi_key','predictions','labels'])
-#test_df.to_csv("./lstm_out/lstm_supervised_test_predictions.csv",index=False)
+#test_df.to_csv("./cnn_out/cnn_supervised_test_predictions.csv",index=False)
 #test_df
 
 # +

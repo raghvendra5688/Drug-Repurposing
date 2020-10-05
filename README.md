@@ -1,7 +1,9 @@
 # Drug-Repurposing
-Data Driven Drug Repurposing for COVID-19  
+A Consensus of In-silico Sequence-based Modeling Techniques for Compound-Viral Protein Activity Prediction for SARS-COV-2  
 
 Here we provide the scripts, data, model and results for predicting drug-viral activity scores using our pipeline.
+
+Details about how to obtain the training and test set for the predictive models is provided in the data folder.
 
 We consider the SARS-COV-2 virus as a use-case and provide ranked list of drugs based on the 3 main proteases:
 

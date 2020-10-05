@@ -235,6 +235,8 @@ y_pred_rf=rf_best.predict(X_test)
 calculate_regression_metrics(y_test,y_pred_rf)
 # -
 
+print(rf_gs.best_estimator_)
+
 meta_X.loc[:,'predictions']=y_pred_rf
 meta_X.loc[:,'labels']=y_test
 rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
