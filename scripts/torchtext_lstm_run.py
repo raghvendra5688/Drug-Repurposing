@@ -39,13 +39,13 @@ print(DEVICE)
 # +
 #Get the src and target fields
 src = Field(sequential=True,
-            tokenize = tokenize, 
+            tokenize = tokenize_drug, 
             init_token = '<sos>', 
             eos_token = '<eos>'
            )
 
 trg = Field(sequential=True,
-            tokenize = tokenize, 
+            tokenize = tokenize_drug, 
             init_token = '<sos>', 
             eos_token = '<eos>'
            )
