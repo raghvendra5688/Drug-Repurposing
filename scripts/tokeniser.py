@@ -1,3 +1,5 @@
+from SmilesPE.pretokenizer import atomwise_tokenizer
+
 import time
 class SmilesDataset:
     '''
@@ -106,31 +108,32 @@ def tokenize_drug(text):
     """
     Tokenizes from a string into a list of strings (tokens)
     """
-    atoms = ['Li','Na','Al','Si','Cl','Sc','Zn',
-             'As','Se','Br','Sn','Te','Cn','H',
-             'B','C','N','O','F','P','S','K',
-             'V','I'
-            ]
-    special = ['(', ')', '[', ']', '=', '#', '%', '0', '1', '2', '3', '4', '5',
-                   '6', '7', '8', '9', '+', '-', 'se', 'te', 'c', 'n', 'o', 's'
-              ]
-    table = sorted(atoms, key=len, reverse=True) + special
-    N = len(text)
-    n = len(table)
-    i = 0
-    seq = list()
+    #atoms = ['Li','Na','Al','Si','Cl','Sc','Zn',
+    #         'As','Se','Br','Sn','Te','Cn','H',
+    #         'B','C','N','O','F','P','S','K',
+    #         'V','I'
+    #        ]
+    #special = ['(', ')', '[', ']', '=', '#', '%', '0', '1', '2', '3', '4', '5',
+    #               '6', '7', '8', '9', '+', '-', 'se', 'te', 'c', 'n', 'o', 's'
+    #          ]
+    #table = sorted(atoms, key=len, reverse=True) + special
+    #N = len(text)
+    #n = len(table)
+    #i = 0
+    #seq = list()
         
-    timeout = time.time() + 5
-    while (i < N):
-        for j in range(n):
-            symbol = table[j]
-            if (symbol==text[i:i+len(symbol)]):
-                seq.append(symbol)
-                i+=len(symbol)
-                break;
-        if time.time() > timeout:
-            break
-
+    #timeout = time.time() + 5
+    #while (i < N):
+    #    for j in range(n):
+    #        symbol = table[j]
+    #        if (symbol==text[i:i+len(symbol)]):
+    #            seq.append(symbol)
+    #            i+=len(symbol)
+    #            break;
+    #    if time.time() > timeout:
+    #        break
+    seq =  atomwise_tokenizer(text)
+    
     return seq
 
 
@@ -161,11 +164,12 @@ def tokenize_protein(text):
 def test():
     print("\nTesting..........")
     print("Tokenising:\tCOc1cccc\n")
-    sd = SmilesDataset("COc1cccc")
+    sd = SmilesDataset("CO[N+]1cccc")
     s0 = sd.Tokenised[:]
     print("Tokenised   = %s" % s0)
     s1 = sd.detokenise(s0)
     print("Detokenised = %s\n" % s1)
+    print(tokenize_drug("CO[N+]1cccc"))
 
 
 if __name__=="__main__":

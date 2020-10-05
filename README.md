@@ -15,7 +15,7 @@ c) Spike protein
 Code Requirements:  
 a) pandas, pickle, numpy, sklearn, scipy all of which are available in latest Anaconda package  
 b) xgboost version 0.90, shap   
-c) pytorch, torchtext, RDKIT, jupytext, cuda (for GPU)  
+c) pytorch, torchtext, RDKIT, jupytext, SmilesPE, cuda (for GPU)  
 
 
 The three traditional machine learning models:
