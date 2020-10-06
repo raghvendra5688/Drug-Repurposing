@@ -16,7 +16,7 @@ Here we provide the details of the steps followed to prepare the data for traini
 
 
 
-# Drug Virus Additional Interactions
+# Compound Virus Activities for Supervised Learning Models
 
 We perform additional search on Pubmed (NCBI) to generate a good AID (Assay Id) list:
 
@@ -28,8 +28,14 @@ We perform additional search on Pubmed (NCBI) to generate a good AID (Assay Id) 
 
 4. 3CL-Pro - Mers Protease - Called MERS_Protease_Assays.txt in this report
 
-All these data are available inside the `additional_data` folder in the `Drug_Virus_Interactions` folder
+All these data are available inside the `additional_data` folder in the `Compound_Virus_Interactions` folder
 
-We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Drug_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file
+We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Compound_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file
 
-We run: `cd Drug_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Drug_Viral_Proteins_Network.csv`, `ncbi_Filtered_Drugs.csv` and `ncbi_drug_src_target_info.csv` files inside the `Drug_Virus_Interactions` folder.
+We run: `cd Compound_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv`, `ncbi_Filtered_Compounds.csv` and `ncbi_compound_src_target_info.csv` files inside the `Compound_Virus_Interactions` folder.
+
+5. We also download curated compound-viral protein activites available in ChEMBL as `Compound_Viral_protein_Networks.csv`
+
+6. Viral protein sequences are downloaded from Uniprot and are available at (https://drive.google.com/file/d/1nmqUZd5_RKxF_FJ9A_nkHIA9H0sevBMK/view?usp=sharing) which can be downloaded and should be put in the folder `Compound_Virus_Interactions`.
+
+We run: `python chembl_filter_compound_virus_interactions.py` to filter compound-virus activities to be either IC50, Ki or Kd and remove interactions where compound SMILES strings are length either >128 or <10 and compounds contain salts. We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv`, `chembl_Filtered_Compounds.csv` and `chembl_compound_src_target_info.csv` as a result inside the `Compound_Virus_Interactions` folder.
