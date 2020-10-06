@@ -8,7 +8,7 @@ Here we provide the details of the steps followed to prepare the data for traini
 
 2. We next run: `python cleanup_smiles.py all_smiles.csv all_smiles_revised.csv` to filter out compounds containing salts and remove stereochemical information. We also filter compounds based on their length, restricting the final set to include compounds whose SMILES sequence lengths are in [10,128] allowing small sized compounds as well as large size ligands to be part of our chemical search space which is relatively bigger than that used in [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111).
 
-3. The resulting all_smiles_revised.csv contains 2,459,645 compounds.
+3. The resulting all_smiles_revised.csv contains 2,454,665 compounds.
 
 4. We next run: `python prepare_smiles_autoencoder.py` to obtain all_smiles_revised_final.csv
 
