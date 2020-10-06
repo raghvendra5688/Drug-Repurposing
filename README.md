@@ -1,5 +1,4 @@
-# Drug-Repurposing
-A Consensus of In-silico Sequence-based Modeling Techniques for Compound-Viral Protein Activity Prediction for SARS-COV-2  
+# A Consensus of In-silico Sequence-based Modeling Techniques for Compound-Viral Protein Activity Prediction for SARS-COV-2  
 
 Here we provide the scripts, data, model and results for predicting drug-viral activity scores using our pipeline.
 
