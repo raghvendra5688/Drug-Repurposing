@@ -227,7 +227,7 @@ only_drug_info.to_csv("ncbi_Filtered_Compounds.csv",index=False)
 only_drug_info
 
 rev_df.rename({"Standard Type":"standard_type"},axis=1,inplace=True)
-output_df = pd.merge(load_sequence_info,rev_df.iloc[:,[4,7,3,5]],on="organism",how="right")
+output_df = pd.merge(load_sequence_info,rev_df.iloc[:,[4,7,6,3,5]],on="organism",how="right",sort=True)
 output_df.to_csv("ncbi_Filtered_Compound_Viral_proteins_Network.csv",index=False)
 output_df.drop_duplicates(subset=["uniprot_accession"])
 
@@ -239,5 +239,4 @@ drug_info = pd.DataFrame({'src':drug_list,'trg':drug_list})
 drug_info.to_csv("ncbi_compound_src_target_info.csv",index=False)
 drug_list
 # -
-
 

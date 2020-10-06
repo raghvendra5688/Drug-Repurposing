@@ -37,8 +37,8 @@ big1_df = pd.read_csv("../data/Compound_Virus_Interactions/chembl_Filtered_Compo
 big2_df = pd.read_csv("../data/Compound_Virus_Interactions/ncbi_Filtered_Compound_Viral_proteins_Network.csv",header='infer')
 
 #Write interactions with protein id, protein sequence, drug inchi key, drug smiles, pchembl value 
-interaction1_df = big1_df.iloc[:,[0,4,5,6,7]].copy()
-interaction2_df = big2_df.iloc[:,[0,4,5,6,7]].copy()
+interaction1_df = big1_df.iloc[:,[0,4,5,6,8]].copy()
+interaction2_df = big2_df.iloc[:,[0,4,5,6,8]].copy()
 
 print(interaction1_df.columns)
 print(interaction2_df.columns)

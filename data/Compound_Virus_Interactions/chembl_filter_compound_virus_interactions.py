@@ -82,10 +82,21 @@ subset2_compound_viral_protein_info = subset1_compound_viral_protein_info.loc[su
 subset2_compound_viral_protein_info = subset2_compound_viral_protein_info.drop_duplicates(subset=["uniprot_accession","standard_inchi_key"])
 print("Shape after compound selection: ",subset2_compound_viral_protein_info.shape)
 subset2_compound_viral_protein_info
-# -
 
+# +
+#Adjust the canonical smiles and remove isomeric part in SMILES
+canonical_smiles_list = subset2_compound_viral_protein_info["canonical_smiles"].values.tolist()
+smiles_modified = []
+for i in range(len(canonical_smiles_list)):
+    smiles = canonical_smiles_list[i]
+    m = Chem.MolFromSmiles(smiles)
+    rev_smiles = Chem.MolToSmiles(m,isomericSmiles=False)
+    smiles_modified.append(rev_smiles)
+subset2_compound_viral_protein_info["canonical_smiles"]=smiles_modified
+    
 #Distribution of pchembl value based on standard type
 subset2_compound_viral_protein_info["standard_type"].value_counts()
+# -
 
 #Get info about unique compounds
 only_compound_info = [[rev_inchikeys_smiles_list[i],to_use_compound_list[i]]for i in range(len(to_use_compound_list))]
@@ -114,7 +125,7 @@ chembl_viral_proteins_with_sequences
 # +
 #Combine the compound viral interactions with protein sequence information
 subset3_compound_viral_protein_info = pd.merge( chembl_viral_proteins_with_sequences,
-                                            subset2_compound_viral_protein_info.iloc[:,[0,1,2,5,6,7]], 
+                                            subset2_compound_viral_protein_info.iloc[:,[0,1,2,5,4,6,7]], 
                                             on=['uniprot_accession','organism','target_pref_name'], sort=True)
 
 subset3_compound_viral_protein_info = subset3_compound_viral_protein_info.drop_duplicates(subset=['uniprot_accession','standard_inchi_key'])
