@@ -101,9 +101,9 @@ only_viral_info = pd.DataFrame(only_viral_info,columns=["uniprot_accession","org
 print("Unique Viral Information in Filtered data: ",only_viral_info.shape)
 
 #Get viral sequence information about all virsuses in Uniprot and intersect with ChEMBL
-full_viral_proteins = pd.read_csv("Full_Viral_proteins_with_Uniprot_IDs.csv.gz",compression='gzip')
+full_viral_proteins = pd.read_csv("Full_Viral_proteins_with_Uniprot_IDs.csv.gz",compression="gzip")
 full_viral_proteins.rename({"Uniprot_id":"uniprot_accession"},axis=1, inplace=True)
-chembl_viral_proteins_with_sequences = pd.merge(only_viral_info,full_viral_proteins.iloc[:,[0,1,3]],on="uniprot_accession")
+chembl_viral_proteins_with_sequences = pd.merge(only_viral_info,full_viral_proteins.iloc[:,[0,1,3]],on="uniprot_accession",sort=True)
 
 #Get info about unique set of viral proteins
 chembl_viral_proteins_with_sequences.sort_values(by=["uniprot_accession"])
@@ -115,7 +115,7 @@ chembl_viral_proteins_with_sequences
 #Combine the compound viral interactions with protein sequence information
 subset3_compound_viral_protein_info = pd.merge( chembl_viral_proteins_with_sequences,
                                             subset2_compound_viral_protein_info.iloc[:,[0,1,2,5,6,7]], 
-                                            on=['uniprot_accession','organism','target_pref_name'])
+                                            on=['uniprot_accession','organism','target_pref_name'], sort=True)
 
 subset3_compound_viral_protein_info = subset3_compound_viral_protein_info.drop_duplicates(subset=['uniprot_accession','standard_inchi_key'])
 
