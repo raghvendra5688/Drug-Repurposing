@@ -37,11 +37,7 @@ torch.cuda.is_available()
 cudaid = int(0)
 DEVICE = torch.device("cuda:%d" % (cudaid) if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-# +
-#Histogram of pchembl values
-#plt.hist(interaction_df["pchembl_value"],bins=10)
 # -
-
 #Define all the variables to be read by torchtext TabularDataset
 TEXT1         =  Field(sequential=True,
                           tokenize = tokenize_protein,
@@ -72,9 +68,10 @@ datafields = [('uniprot_accession',INDEX1),
 
 #Make predictions on SARS-COV-2 viral proteins
 full_data, data, test_data = TabularDataset.splits(
-           path="../data/", train='all_drug_viral_interactions_for_supervised_learning.csv',
-           validation='Train_Drug_Viral_interactions_for_Supervised_Learning.csv',
-           test='sars_cov_2_drug_viral_interactions_to_predict.csv',
+           path="../data/", train='all_compound_viral_interactions_for_supervised_learning.csv',
+           validation='Train_Compound_Viral_interactions_for_Supervised_Learning.csv',
+           test='Test_Compound_Viral_interactions_for_Supervised_Learning.csv',
+           #test='sars_cov_2_drug_viral_interactions_to_predict.csv',
            format='csv',
            skip_header=True, # if your csv header has a header, make sure to pass this to ensure it doesn't get proceesed as data!
            fields=datafields)
@@ -146,8 +143,8 @@ SMILES_HID_DIM = 128
 SMILES_OUT_DIM = 256
 PAD_IDX2 = TEXT2.vocab.stoi[TEXT2.pad_token]
 
-N_FILTERS = 128
-FILTER_SIZES = [3,6,9,12]
+N_FILTERS = 64
+FILTER_SIZES = [2,3,4,6,8,9,12,16]
 
 HID_DIM = 128
 N_LAYERS = 2
@@ -167,48 +164,48 @@ optimizer = optim.Adam(model.parameters())
 criterion = nn.MSELoss().to(DEVICE)
 
 # +
-#N_EPOCHS = 1000
-#CLIP = 1
-#counter = 0
-#patience = 200
-#train_loss_list = []
-#valid_loss_list = []
-#best_valid_loss = float('inf')
-#for epoch in range(N_EPOCHS):
-#    if (counter<patience):
-#        print("Counter Id: ",str(counter))
-#        start_time = time.time()
-#        train_loss = train(model, train_iterator, optimizer, criterion, CLIP)
-#        valid_loss = evaluate(model, valid_iterator, criterion)
-#        end_time = time.time()
-#        epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+N_EPOCHS = 1000
+CLIP = 1
+counter = 0
+patience = 400
+train_loss_list = []
+valid_loss_list = []
+best_valid_loss = float('inf')
+for epoch in range(N_EPOCHS):
+    if (counter<patience):
+        print("Counter Id: ",str(counter))
+        start_time = time.time()
+        train_loss = train(model, train_iterator, optimizer, criterion, CLIP)
+        valid_loss = evaluate(model, valid_iterator, criterion)
+        end_time = time.time()
+        epoch_mins, epoch_secs = epoch_time(start_time, end_time)
         
-#        train_loss_list.append(train_loss)
-#        valid_loss_list.append(valid_loss)
-#        if valid_loss < best_valid_loss:
-#            counter = 0
-#            print("Current Val. Loss: %.3f better than prev Val. Loss: %.3f " %(valid_loss,best_valid_loss))
-#            best_valid_loss = valid_loss
-#            torch.save(model.state_dict(), 'cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt')
-#        else:
-#            counter+=1
-#        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
-#        print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
-#        print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
+        train_loss_list.append(train_loss)
+        valid_loss_list.append(valid_loss)
+        if valid_loss < best_valid_loss:
+            counter = 0
+            print("Current Val. Loss: %.3f better than prev Val. Loss: %.3f " %(valid_loss,best_valid_loss))
+            best_valid_loss = valid_loss
+            torch.save(model.state_dict(), 'cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt')
+        else:
+            counter+=1
+        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
+        print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
+        print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
 
 
-model.load_state_dict(torch.load('../models/cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt'))
+#model.load_state_dict(torch.load('../models/cnn_lstm_out/cnn_lstm_supervised_checkpoint.pt'))
 valid_loss = evaluate(model, valid_iterator, criterion)
 print(f'| Best Valid Loss: {valid_loss:.3f} | Best Valid PPL: {math.exp(valid_loss):7.3f} |')
 
-#test_loss = evaluate(model, test_iterator, criterion)
-#print(f'| Test Loss: {test_loss: .3f} | Best Test PPL: {math.exp(test_loss):7.3f} |')
+test_loss = evaluate(model, test_iterator, criterion)
+print(f'| Test Loss: {test_loss: .3f} | Best Test PPL: {math.exp(test_loss):7.3f} |')
 
-#fout=open("cnn_lstm_out/cnn_lstm_supervised_loss_plot.csv","w")
-#for i in range(len(train_loss_list)):
-#    outputstring = str(train_loss_list[i])+","+str(valid_loss_list[i])+"\n"
-#    fout.write(outputstring)
-#fout.close()
+fout=open("cnn_lstm_out/cnn_lstm_supervised_loss_plot.csv","w")
+for i in range(len(train_loss_list)):
+    outputstring = str(train_loss_list[i])+","+str(valid_loss_list[i])+"\n"
+    fout.write(outputstring)
+fout.close()
 
 # +
 model.eval()
@@ -240,17 +237,14 @@ with torch.no_grad():
         del trg
         torch.cuda.empty_cache()
 
-fout = open("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv","w")
+#fout = open("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv","w")
+fout = open("cnn_lstm_out/cnn_lstm_supervised_test_predictions.csv","w")
 header = 'uniprot_accession,'+'standard_inchi_key,'+'predictions,'+'labels'+'\n'
 fout.write(header)
 for data in output_list:
     string_list = [str(x) for x in data];
     temp_str = ",".join(string_list)
     fout.write(temp_str+"\n")
-
-#test_df = pd.DataFrame(output_list, columns=['uniprot_accession','standard_inchi_key','predictions','labels'])
-#test_df.to_csv("./cnn_out/cnn_supervised_test_predictions.csv",index=False)
-#test_df
 
 # +
 # visualize the loss as the network trained

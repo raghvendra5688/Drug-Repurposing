@@ -67,6 +67,7 @@ datafields = [('uniprot_accession',INDEX1),
              ]
 
 #Model in test mode for the SARS-COV-2 viral proteins
+#Full data is used only for the purpose of having inchikey of all compounds in train and test set and uniprot accession of all viral organisms
 full_data, data, test_data = TabularDataset.splits(
            path="../data/", train='all_compound_viral_interactions_for_supervised_learning.csv',
            validation='Train_Compound_Viral_interactions_for_Supervised_Learning.csv',
@@ -140,11 +141,11 @@ SMILES_OUT_DIM = 256
 PAD_IDX2 = TEXT2.vocab.stoi[TEXT2.pad_token]
 
 N_FILTERS = 128
-FILTER_SIZES = [3,6,9,12]
+FILTER_SIZES = [2,3,4,6,8,9,12,16]
 
-HID_DIM = 128
+HID_DIM = 256
 OUT_DIM = 1
-DROPOUT = 0.0
+DROPOUT = 0.1
 
 
 protein_enc = CNN_Encoder(PROTEIN_INPUT_DIM, PROTEIN_ENC_EMB_DIM, PROTEIN_OUT_DIM, N_FILTERS, FILTER_SIZES, DROPOUT, PAD_IDX1)
