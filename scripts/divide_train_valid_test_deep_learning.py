@@ -54,10 +54,13 @@ interaction_df = pd.concat([interaction1_df,interaction2_df],ignore_index=True)
 interaction_df.drop_duplicates(subset=['uniprot_accession','standard_inchi_key'],inplace=True)
 interaction_df.reset_index(inplace=True, drop=True) 
 interaction_df
+print(interaction1_df.shape)
+print(interaction2_df.shape)
 # -
 
 #Unique no of viral organisms in the dataset
 np.size(np.union1d(big1_df['organism'].unique(),big2_df['organism'].unique()))
+plt.hist(interaction_df["pchembl_value"])
 
 # +
 #Create the train test split to be used by all downstream ML methods
@@ -67,6 +70,9 @@ indices = np.arange(interaction_df.shape[0])
 _,_,_,_, indices_train, indices_test = train_test_split(interaction_df, y, indices, test_size=0.1, random_state=42)
 
 indices_train,indices_test = list(indices_train),list(indices_test)
+indices_train_set = set(indices_train)
+indices_test_set = set(indices_test)
+
 indices_list = []
 for i in range(len(indices_train)):
     indices_list.append(['train',indices_train[i]])

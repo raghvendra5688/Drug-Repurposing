@@ -66,8 +66,8 @@ to_use_ids = [i for i in range(len(res1)) if len(res1[i])<=128 and len(res1[i])>
 
 
 #Write the compound list in form readable for LSTM autoencoder
-compound_info = pd.DataFrame({'src':to_use_compound_list,'trg':to_use_compound_list})
-compound_info.to_csv("chembl_compound_src_target_info.csv",index=False)
+#compound_info = pd.DataFrame({'src':to_use_compound_list,'trg':to_use_compound_list})
+#compound_info.to_csv("chembl_compound_src_target_info.csv",index=False)
 
 
 #Get the unique Inchi key id of all compounds with length <= 128
@@ -101,8 +101,8 @@ subset2_compound_viral_protein_info["standard_type"].value_counts()
 #Get info about unique compounds
 only_compound_info = [[rev_inchikeys_smiles_list[i],to_use_compound_list[i]]for i in range(len(to_use_compound_list))]
 only_compound_info = pd.DataFrame(only_compound_info, columns=['standard_inchi_key','canonical_smiles'])
-only_compound_info.to_csv("chembl_Filtered_Compounds.csv",index=False)
-only_compound_info.shape
+#only_compound_info.to_csv("chembl_Filtered_Compounds.csv",index=False)
+#only_compound_info.shape
 
 # +
 #Get info about unique viral accession numbers
@@ -118,7 +118,7 @@ chembl_viral_proteins_with_sequences = pd.merge(only_viral_info,full_viral_prote
 
 #Get info about unique set of viral proteins
 chembl_viral_proteins_with_sequences.sort_values(by=["uniprot_accession"])
-chembl_viral_proteins_with_sequences.to_csv("chembl_Filtered_Viral_Proteins.csv",index=False)
+#chembl_viral_proteins_with_sequences.to_csv("chembl_Filtered_Viral_Proteins.csv",index=False)
 seq_lens = [len(x) for x in chembl_viral_proteins_with_sequences["Sequence"].values.tolist()]
 chembl_viral_proteins_with_sequences
 

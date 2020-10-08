@@ -144,7 +144,7 @@ for epoch in range(N_EPOCHS):
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
 
 
-model.load_state_dict(torch.load('../models/torchtext_checkpoint.pt'))
+#model.load_state_dict(torch.load('../models/torchtext_checkpoint.pt'))
 valid_loss = evaluate(model, valid_iterator, criterion)
 print(f'| Best Valid Loss: {valid_loss:.3f} | Best Valid PPL: {math.exp(valid_loss):7.3f} |')
 

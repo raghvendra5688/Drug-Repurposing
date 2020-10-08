@@ -220,11 +220,13 @@ rev_df = rev_df.drop(rev_df.index[salt_indexes])
 load_sequence_info = pd.read_csv("ncbi_Filtered_Viral_Proteins.csv",header='infer',sep=",")
 load_sequence_info
 
-only_drug_info = rev_df[["standard_inchi_key","canonical_smiles"]].values.tolist()
-only_drug_info = set(tuple(x) for x in only_drug_info)
-only_drug_info = pd.DataFrame(only_drug_info, columns=['standard_inchi_key','canonical_smiles'])
-only_drug_info.to_csv("ncbi_Filtered_Compounds.csv",index=False)
-only_drug_info
+# +
+#only_drug_info = rev_df[["standard_inchi_key","canonical_smiles"]].values.tolist()
+#only_drug_info = set(tuple(x) for x in only_drug_info)
+#only_drug_info = pd.DataFrame(only_drug_info, columns=['standard_inchi_key','canonical_smiles'])
+#only_drug_info.to_csv("ncbi_Filtered_Compounds.csv",index=False)
+#only_drug_info
+# -
 
 rev_df.rename({"Standard Type":"standard_type"},axis=1,inplace=True)
 output_df = pd.merge(load_sequence_info,rev_df.iloc[:,[4,7,6,3,5]],on="organism",how="right",sort=True)
@@ -232,11 +234,9 @@ output_df.to_csv("ncbi_Filtered_Compound_Viral_proteins_Network.csv",index=False
 output_df.drop_duplicates(subset=["uniprot_accession"])
 
 # +
-drug_list = only_drug_info["canonical_smiles"].values.tolist()
+#drug_list = only_drug_info["canonical_smiles"].values.tolist()
 
 #Write the drug list in form readable for LSTM autoencoder
-drug_info = pd.DataFrame({'src':drug_list,'trg':drug_list})
-drug_info.to_csv("ncbi_compound_src_target_info.csv",index=False)
-drug_list
-# -
-
+#drug_info = pd.DataFrame({'src':drug_list,'trg':drug_list})
+#drug_info.to_csv("ncbi_compound_src_target_info.csv",index=False)
+#drug_list

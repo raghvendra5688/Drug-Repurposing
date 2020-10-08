@@ -32,7 +32,7 @@ All these data are available inside the `additional_data` folder in the `Compoun
 
 We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Compound_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file
 
-We run: `cd Compound_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv`, `ncbi_Filtered_Compounds.csv` and `ncbi_compound_src_target_info.csv` files inside the `Compound_Virus_Interactions` folder.
+We run: `cd Compound_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
 
 5. We also download curated compound-viral protein activites available in ChEMBL as `Compound_Viral_protein_Networks.csv`
 
@@ -40,9 +40,11 @@ We run: `cd Compound_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.g
 
 We run: `python chembl_filter_compound_virus_interactions.py` to filter compound-virus activities to be either IC50, Ki or Kd and remove interactions where compound SMILES strings are length either >128 or <10 and compounds contain salts. 
 
-We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv`, `chembl_Filtered_Compounds.csv` and `chembl_compound_src_target_info.csv` as a result inside the `Compound_Virus_Interactions` folder.
+We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv` as a result inside the `Compound_Virus_Interactions` folder.
 
-7. We next run: `cd ../../scripts/ ;  python divide_train_valid_test_deep_learning.py` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
+7. We next run: `cd ../../scripts/ ;  python divide_train_valid_test_deep_learning.py` which combines the `chembl_Filtered_Compound_Viral_Proteins_Network.csv` and `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
 
 
 # Compound Virus Activties for Traditional Supervised Learning Models based on Embeddings
+
+1. 
