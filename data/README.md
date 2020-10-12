@@ -12,7 +12,7 @@ Here we provide the details of the steps followed to prepare the data for traini
 
 4. We next run: `python prepare_smiles_autoencoder.py` to obtain all_smiles_revised_final.csv
 
-5. To train the SMILES autoencoder model we run: `cd ../../scripts/; python torchtext_lstm_run.py`. This results in `torchtext_checkpoint.pt` in the models folder.
+5. To train the SMILES autoencoder model we run: `cd ../../scripts/; python torchtext_smiles_autoencoder.py`. This results in `torchtext_checkpoint.pt` in the models folder.
 
 
 
@@ -42,9 +42,32 @@ We run: `python chembl_filter_compound_virus_interactions.py` to filter compound
 
 We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv` as a result inside the `Compound_Virus_Interactions` folder.
 
-7. We next run: `cd ../../scripts/ ;  python divide_train_valid_test_deep_learning.py` which combines the `chembl_Filtered_Compound_Viral_Proteins_Network.csv` and `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
+7. We next run: `cd ../../scripts/ ;  python train_valid_test_deep_learning.py` which combines the `chembl_Filtered_Compound_Viral_Proteins_Network.csv` and `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
 
 
 # Compound Virus Activties for Traditional Supervised Learning Models based on Embeddings
 
-1. 
+To generate the embedding representation of the compounds using the Teacher Forcing-LSTM SMILES Autoencoder, we need to follow the below mentioned steps:
+
+1. For training set, run `cd scripts` from home folder of repository and then run `python ls_generator_smiles.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_LS.csv`. This will result in the file `Train_Compound_LS.csv` in the `data` folder with same number of lines as in training file and 256 dimensions.
+
+2. For test set run `python ls_generator_smiles.py --input Test_Compound_Viral_interactions_for_Supervised_Learning.csv --output Test_Compound_LS.csv` to obtain `Test_Compound_LS.csv` in the `data` folder.
+
+
+To generate the vector representation of the compounds using Morgan Fingerprints, we need to follow the below mentioned steps:
+
+1. For training set, run `cd scripts` from home of repository and then run `python ls_generator_morgan.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_MFP.csv`. This will result in the file `Train_Compound_MFP.csv` in the `data` folder with the same number of lines as training file and 256 dimensions.
+
+2. For test set run `python ls_generator_morgan.py --input Test_Compound_Viral_interactions_for_Supervised_Learning.csv --output Test_Compound_MFP.csv` to obtain `Test_Compound_MFP.csv` in the `data` folder.
+
+
+To generate the vector representation of the viral proteins, we need to follow the below mentioned steps:
+
+
+
+
+To produce the training and test set with vector representation of compounds from SMILES autoencoder/Morgan Fingerprints and latent space representation of viral proteins, we take the following steps:
+
+1. Run `cd scripts`
+
+2. Run `python train_valid_test_supervised learning_on_ls.py` to produce `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` for SMILES autoencoder + protein autoencoder embedding combination for train and test set respectively. Similarly, we also obtain `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP`_LS.csv and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` for Morgan fingerprints + protein autoencoder embedding combination for train and test set respectively. All these files are produced in the `data` folder.

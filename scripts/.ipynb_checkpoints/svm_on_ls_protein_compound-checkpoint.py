@@ -41,10 +41,12 @@ from misc import save_model, load_model, regression_results, grid_search_cv
 
 # +
 # Options of settings with different Xs and Ys 
-options = ["../data/Train_Compound_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv",
+options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
            ".."] #(to be continued)
 
-data_type_options = ["_LS_Drug_LS_Protein",
+data_type_options = ["LS_Compound_LS_Protein",
+                     "MFP_Compound_LS_Protein",
                      ".."
                     ]
 
@@ -163,12 +165,14 @@ save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("svm","svm",data_type))
 svm_gs = load_model("svm_models/svm__LS_Drug_LS_Protein_regressor_gs.pk")
 scaler = load_model("svm_models/svm__LS_Drug_LS_Protein_scaling_gs.pk")
 svm_best = svm_gs.best_estimator_
-y_pred_svm=svm_best.predict(X_train_copy)
-plt.hist(y_pred_svm)
 
 # +
 np.max(svm_gs.cv_results_['mean_test_score'])
-filename = "../data/Test_Compound_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv"
+
+file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+             "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
+
+filename = file_list[input_option]
 with open(filename, "rb") as file:
     print("Loading ", filename)
     big_df = pd.read_csv(filename, header='infer', delimiter=",")
@@ -186,13 +190,13 @@ X_test = X
 y_test = Y
 X_test_copy = scaler.transform(X_test)
 y_pred_svm=svm_best.predict(X_test_copy)
-calculate_regression_metrics(y_test,y_pred_svm)
-# -
+print(calculate_regression_metrics(y_test,y_pred_svm))
 
-meta_X = big_df.iloc[:,[0,2]].copy()
-meta_X.loc[:,'predictions']=y_pred_svm
-meta_X.loc[:,'labels']=y_test
-meta_X.to_csv("../results/SVM_supervised_test_predictions.csv",index=False)
+#Write the predictions
+meta_X["predictions"]=y_pred_svm
+meta_X["labels"]=y_test
+rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
+rev_output_df.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
 
 # +
 ## load JS visualization code to notebook (Doesn't work for random forest)
@@ -203,19 +207,19 @@ meta_X.to_csv("../results/SVM_supervised_test_predictions.csv",index=False)
 #shap_values = explainer.shap_values(X_train)
 #shap.summary_plot(shap_values, X_train)
 # +
-#Get results for SARS-COV-2
-big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_compound_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
-total_length = len(big_X_test.columns)
-X_test = big_X_test.iloc[:,range(8,total_length)]
-svm_best = load_model("../models/svm_models/svm__LS_Drug_LS_Protein_regressor_best_estimator.pk")
-scaler = load_model("../models/svm_models/svm__LS_Drug_LS_Protein_scaling_gs.pk")
-X_test_copy = scaler.transform(X_test)
-y_pred = svm_best.predict(X_test_copy)
+##Get results for SARS-COV-2
+#big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_compound_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
+#total_length = len(big_X_test.columns)
+#X_test = big_X_test.iloc[:,range(8,total_length)]
+#svm_best = load_model("../models/svm_models/svm__LS_Drug_LS_Protein_regressor_best_estimator.pk")
+#scaler = load_model("../models/svm_models/svm__LS_Drug_LS_Protein_scaling_gs.pk")
+#X_test_copy = scaler.transform(X_test)
+#y_pred = svm_best.predict(X_test_copy)
 
-meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-meta_X_test.loc[:,'predictions']=y_pred
-meta_X_test.loc[:,'labels']=0
-meta_X_test.to_csv("../results/SVM_supervised_sars_cov2_test_predictions.csv",index=False)
+#meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+#meta_X_test.loc[:,'predictions']=y_pred
+#meta_X_test.loc[:,'labels']=0
+#meta_X_test.to_csv("../results/SVM_supervised_sars_cov2_test_predictions.csv",index=False)
 # -
 
 

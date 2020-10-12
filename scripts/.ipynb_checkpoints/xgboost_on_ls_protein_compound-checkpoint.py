@@ -42,15 +42,17 @@ from misc import save_model, load_model, regression_results, grid_search_cv
 
 # +
 # Options of settings with different Xs and Ys 
-options = ["../data/Train_Compound_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv",
+options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
            ".."] #(to be continued)
 
-data_type_options = ["_LS_Drug_LS_Protein",
+data_type_options = ["LS_Compound_LS_Protein",
+                     "MFP_Compound_LS_Protein",
                      ".."
                     ]
 
 # input option is also used to control the model parameters below
-input_option = 0
+input_option = 1
 
 classification_task = False
 classification_th = 85
@@ -151,7 +153,7 @@ param_xgb = {"n_estimators": scipy.stats.randint(20, 500),
                "reg_lambda": loguniform(1, 1e1),
 }   
 
-n_iter=200
+n_iter=300
 
 if classification_task:
     xgb_gs=supervised_learning_steps("xgb","roc_auc",data_type,classification_task,model,param_xgb,X_train,y_train,n_iter)
@@ -159,17 +161,14 @@ else:
     xgb_gs=supervised_learning_steps("xgb","r2",data_type,classification_task,model,param_xgb,X_train,y_train,n_iter)
 
 xgb_gs.cv_results_
-# -
-
-xgb_gs = load_model("xgb_models/xgb__LS_Drug_LS_Protein_regressor_gs.pk")
-xgb_best = xgb_gs.best_estimator_
-y_pred_xgb=xgb_best.predict(X_train)
-plt.hist(y_pred_xgb)
-calculate_regression_metrics(y_train,y_pred_xgb)
 
 # +
 np.max(xgb_gs.cv_results_["mean_test_score"])
-filename = "../data/Test_Compound_Viral_interactions_with_LS_v2_for_Supervised_Learning.csv"
+file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+             "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
+
+filename = file_list[input_option]
+
 with open(filename, "rb") as file:
     print("Loading ", filename)
     big_df = pd.read_csv(filename, header='infer', delimiter=",")
@@ -185,35 +184,36 @@ indices = np.arange(n_samples)
 
 X_test = X
 y_test = Y
+xgb_best = xgb_gs.best_estimator_
 y_pred_xgb=xgb_best.predict(X_test)
-calculate_regression_metrics(y_test,y_pred_xgb)
-# -
+print(calculate_regression_metrics(y_test,y_pred_xgb))
 
-meta_X.loc[:,'predictions']=y_pred_xgb
-meta_X.loc[:,'labels']=y_test
+#Write the output in the results folder
+meta_X["predictions"]=y_pred_xgb
+meta_X["labels"]=y_test
 rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
-rev_output_df.to_csv("../results/XGB_supervised_test_predictions.csv",index=False)
+rev_output_df.to_csv("../results/XGB_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
 
 # +
-## load JS visualization code to notebook (Doesn't work for random forest)
-#shap.initjs()
+# #load JS visualization code to notebook (Doesn't work for random forest)
+# shap.initjs()
 
-## explain the model's predictions using SHAP values
-#explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
-#shap_values = explainer.shap_values(X_train)
-#shap.summary_plot(shap_values, X_train)
+# #explain the model's predictions using SHAP values
+# explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
+# shap_values = explainer.shap_values(X_train)
+# shap.summary_plot(shap_values, X_train)
 # +
-#Get results for SARS-COV-2
-big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_compound_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
-total_length = len(big_X_test.columns)
-X_test = big_X_test.iloc[:,range(8,total_length)]
-xgb_best = load_model("../models/xgb_models/xgb__LS_Drug_LS_Protein_regressor_best_estimator.pk")
-y_pred = xgb_best.predict(X_test)
+# #Get results for SARS-COV-2
+# big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_compound_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
+# total_length = len(big_X_test.columns)
+# X_test = big_X_test.iloc[:,range(8,total_length)]
+# xgb_best = load_model("../models/xgb_models/xgb__LS_Drug_LS_Protein_regressor_best_estimator.pk")
+# y_pred = xgb_best.predict(X_test)
 
-meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-meta_X_test.loc[:,'predictions']=y_pred
-meta_X_test.loc[:,'labels']=0
-meta_X_test.to_csv("../results/XGB_supervised_sars_cov2_test_predictions.csv",index=False)
+# meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+# meta_X_test.loc[:,'predictions']=y_pred
+# meta_X_test.loc[:,'labels']=0
+# meta_X_test.to_csv("../results/XGB_supervised_sars_cov2_test_predictions.csv",index=False)
 # -
 
 
