@@ -13,8 +13,8 @@ c) Spike protein
 
 Code Requirements:  
 a) python3, pandas, pickle, numpy, sklearn, scipy all of which are available in latest Anaconda package  
-b) xgboost version 0.90, shap   
-c) pytorch, torchtext, RDKIT, jupytext, SmilesPE, cuda (for GPU)  
+b) xgboost version 0.90, shap 
+c) pytorch, torchtext, RDKIT, pubchempy, jupytext, SmilesPE, cuda (for GPU)  
 
 
 The four traditional machine learning models:
@@ -24,7 +24,7 @@ a) Random Forests - `scripts/supervised_rf_on_ls_protein_compound.py`
 b) SVM - `scripts/supervised_svm_on_ls_protein_compound.py`  
 c) XGBoost - `scripts/supervised_xgb_on_ls_protein_compound.py`
 
-Training done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the README available in the `data` folder.
+Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the README available in the `data` folder.
 
 For COVID-19 use case the code is run in test mode on: `data/COVID_19/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
 
@@ -43,12 +43,13 @@ c) CNN-LSTM - `scripts/torchtext_cnn_lstm_supervised_learning.py`
 
 Runs on test mode:  
 1. `data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv`  
-2. `data/sars_cov_2_compound_viral_interactions_to_predict.csv`
+2. `data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv`
 
 Ouputs:  
 a) CNN - `results/cnn_supervised_test_predictions.csv` and `results/cnn_supervised_sars_cov_2_test_predictions.csv`  
 b) LSTM - `results/lstm_supervised_test_predictions.csv` and `results/lstm_supervised_sars_cov_2_test_predictions.csv`  
 c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv`, `results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv`
+
 
 To compare performance of methods on test set:  
 a) Install R, Librarires- ggplot2, ggthemes  
@@ -56,7 +57,7 @@ b) Run `R make_error_correlation_plots.R`
 
 
 To get ranked list of compounds for SARS-COV-2 viral proteins:   
-a) Run `sars_cov_2_processing.py`
+a) Run `sars_cov_2_postprocessing.py`
 
 Outputs:  
 a) 3CL-Pro - `results/3CL_Pro_Top_Ranked_Compounds.csv`  
