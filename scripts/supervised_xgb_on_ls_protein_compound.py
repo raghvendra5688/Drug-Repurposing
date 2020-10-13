@@ -1,7 +1,6 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,py:light
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -52,7 +51,7 @@ data_type_options = ["LS_Compound_LS_Protein",
                     ]
 
 # input option is also used to control the model parameters below
-input_option = 1
+input_option = 0
 
 classification_task = False
 classification_th = 85
@@ -202,18 +201,30 @@ rev_output_df.to_csv("../results/XGB_"+data_type_options[input_option]+"supervis
 # explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
 # shap_values = explainer.shap_values(X_train)
 # shap.summary_plot(shap_values, X_train)
-# +
-# #Get results for SARS-COV-2
-# big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_compound_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
-# total_length = len(big_X_test.columns)
-# X_test = big_X_test.iloc[:,range(8,total_length)]
-# xgb_best = load_model("../models/xgb_models/xgb__LS_Drug_LS_Protein_regressor_best_estimator.pk")
-# y_pred = xgb_best.predict(X_test)
-
-# meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-# meta_X_test.loc[:,'predictions']=y_pred
-# meta_X_test.loc[:,'labels']=0
-# meta_X_test.to_csv("../results/XGB_supervised_sars_cov2_test_predictions.csv",index=False)
 # -
+#Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
+input_option=1
+if (input_option==0):
+    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
+    total_length = len(big_X_test.columns)
+    X_test = big_X_test.iloc[:,range(5,total_length)]
+    xgb_best = load_model("../models/xgb_models/xgb_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+    y_pred = xgb_best.predict(X_test)
+
+    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+    meta_X_test.loc[:,'predictions']=y_pred
+    meta_X_test.loc[:,'labels']=0
+    meta_X_test.to_csv("../results/XGB_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+elif (input_option==1):
+    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
+    total_length = len(big_X_test.columns)
+    X_test = big_X_test.iloc[:,range(5,total_length)]
+    xgb_best = load_model("../models/xgb_models/xgb_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+    y_pred = xgb_best.predict(X_test)
+
+    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+    meta_X_test.loc[:,'predictions']=y_pred
+    meta_X_test.loc[:,'labels']=0
+    meta_X_test.to_csv("../results/XGB_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
 
 

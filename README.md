@@ -29,7 +29,7 @@ Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Lea
 For COVID-19 use case the code is run in test mode on: `data/COVID_19/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
 
 Outputs:  
-a) GLM - `results/GLM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/GLM_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/GLM_supervised_sars_cov2_test_predictions.csv`
+a) GLM - `results/GLM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/GLM_LS_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/GLM_supervised_sars_cov2_test_predictions.csv`
 b) RF - `results/RF_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/RF_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/RF_supervised_sars_cov2_test_predictions.csv`  
 c) SVM - `results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/SVM_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/SVM_supervised_sars_cov2_test_predictions.csv`  
 d) XGB - `results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/XGB_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/XGB_supervised_sars_cov2_test_predictions.csv`   

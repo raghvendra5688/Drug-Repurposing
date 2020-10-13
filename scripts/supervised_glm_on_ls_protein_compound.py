@@ -218,18 +218,33 @@ model = dummy.DummyRegressor(strategy=strategy)
 model.fit(X_train,y_train)
 y_pred_median = model.predict(X_test)
 print(calculate_regression_metrics(y_test,y_pred_median))
-
-# +
-##Get results for SARS-COV-2
-#big_X_test = pd.read_csv("../data/COVID-19/sars_cov_2_additional_drug_viral_interactions_to_predict_with_LS_v2.csv",header='infer',sep=",")
-#total_length = len(big_X_test.columns)
-#X_test = big_X_test.iloc[:,range(8,total_length)]
-#rf_best = load_model("../models/rf_models/rf__LS_Drug_LS_Protein_regressor_best_estimator.pk")
-#y_pred = rf_best.predict(X_test)
-
-#meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-#meta_X_test.loc[:,'predictions']=y_pred
-#meta_X_test.loc[:,'labels']=0
-#meta_X_test.to_csv("../results/RF_supervised_sars_cov2_additional_test_predictions.csv",index=False)
 # -
+
+#Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
+input_option=0
+if (input_option==0):
+    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
+    total_length = len(big_X_test.columns)
+    X_test = big_X_test.iloc[:,range(5,total_length)]
+    lr_best = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+    scaler = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_scaling_gs.pk")
+    y_pred = lr_best.predict(scaler.transform(X_test))
+
+    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+    meta_X_test.loc[:,'predictions']=y_pred
+    meta_X_test.loc[:,'labels']=0
+    meta_X_test.to_csv("../results/GLM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+elif (input_option==1):
+    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
+    total_length = len(big_X_test.columns)
+    X_test = big_X_test.iloc[:,range(5,total_length)]
+    lr_best = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+    scaler = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_scaling_gs.pk")
+    y_pred = lr_best.predict(scaler.transform(X_test))
+
+    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+    meta_X_test.loc[:,'predictions']=y_pred
+    meta_X_test.loc[:,'labels']=0
+    meta_X_test.to_csv("../results/GLM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+
 

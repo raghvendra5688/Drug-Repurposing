@@ -79,9 +79,23 @@ To produce the training and test set with vector representation of compounds fro
 
 2. We combine all these compounds by running `cd data/COVID-19; python get_all_compounds_COVID_19.py` and screen for unique compounds whose SMILES strings are 10<=length(x)<=128 and don't contain salt bridges resulting in a total of 1664 compounds in `all_verified_keys.list`.
 
-3. We prepare the SARS-COV-2 test set for end-to-end deep learning by running `python sars_cov_2_preprocessing.py` from the `data/COVID-19` folder resulting in `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv` file in the `data` folder.
+3. We prepare the SARS-COV-2 test set for end-to-end deep learning by running `python sars_cov_2_preprocessing.py` from the `data/COVID-19` folder resulting in `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv` file in the `data` folder. 
+
+We use a dummy value of 0.0 as the `pchembl_value` to be compliant with the formats required for the end-to-end deep learning models.
 
 4. We can obtain results for CNN, LSTM and CNN+LSTM models for SARS-COV-2 viral proteins by running `cd scripts` from home directory followed by `torchtext_cnn_supervised_learning.py`, `torchtext_lstm_supervised_learning.py` and `torchtext_cnn_lstm_supervised_learning.py` respectively. More details are available in the README in the home directory.
 
 
+5. To prepare SARS-COV-2 test set using the SMILES encoding + the protein encoding and Morgan Fingerprints + protein encoding, we follow the procedure:
 
+    * Run `cd scripts`
+
+    * Run `python ls_generator_smiles.py --input sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv --output sars_cov_2_Compound_LS.csv`
+
+    * Run `python ls_generator_morgan.py --input sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv --output sars_cov_2_Compound_MFP.csv`
+
+    * Run 
+
+    * Run `python test_sars_cov_2_supervised_learning_on_ls.py` to produce `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` (for SMILES embedding + protein embedding) and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` (for Morgan Fingerprints + protein embedding).
+
+    * We can now run the state-of-the-art ML techniques like GLM, RF, SVM and XGBoost as mentioned in the README of our repository.

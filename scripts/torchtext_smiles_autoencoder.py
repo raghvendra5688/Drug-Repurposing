@@ -75,6 +75,9 @@ print(f"Unique tokens in source vocabulary: {len(src.vocab)}")
 print(f"Unique tokens in target vocabulary: {len(trg.vocab)}")
 TRG_PAD_IDX = trg.vocab.stoi[trg.pad_token]
 print("Padding Id: ",TRG_PAD_IDX)
+# -
+
+print(src.vocab.stoi)
 
 # +
 BATCH_SIZE = 2048
