@@ -40,6 +40,7 @@ The three end-to-end deep learning models:
 a) CNN - `scripts/torchtext_cnn_supervised_learning.py`  
 b) LSTM - `scripts/torchtext_lstm_supervised_learning.py`  
 c) CNN-LSTM - `scripts/torchtext_cnn_lstm_supervised_learning.py`  
+d) GAT-CNN  - `scripts/torchtext_gat_cnn_supervised_learning.py`
 
 Runs on test mode:  
 1. `data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv`  
@@ -48,7 +49,8 @@ Runs on test mode:
 Ouputs:  
 a) CNN - `results/cnn_supervised_test_predictions.csv` and `results/cnn_supervised_sars_cov_2_test_predictions.csv`  
 b) LSTM - `results/lstm_supervised_test_predictions.csv` and `results/lstm_supervised_sars_cov_2_test_predictions.csv`  
-c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv`, `results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv`
+c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv` and `results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv`
+d) GAT-CNN - `results/gat_cnn_supervised_test_predictions.csv` and `results/gat_cnn_supervised_sars_cov_2_test_predictions.csv`
 
 
 To compare performance of methods on test set:  
