@@ -70,8 +70,8 @@ datafields = [('uniprot_accession',INDEX1),
 full_data, data, test_data = TabularDataset.splits(
            path="../data/", train='all_compound_viral_interactions_for_supervised_learning.csv',
            validation='Train_Compound_Viral_interactions_for_Supervised_Learning.csv',
-           test='Test_Compound_Viral_interactions_for_Supervised_Learning.csv',
-           #test='sars_cov_2_drug_viral_interactions_to_predict.csv',
+           #test='Test_Compound_Viral_interactions_for_Supervised_Learning.csv',
+           test='sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv',
            format='csv',
            skip_header=True, # if your csv header has a header, make sure to pass this to ensure it doesn't get proceesed as data!
            fields=datafields)
@@ -242,8 +242,8 @@ with torch.no_grad():
         del trg
         torch.cuda.empty_cache()
 
-#fout = open("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv","w")
-fout = open("../results/cnn_lstm_supervised_test_predictions.csv","w")
+fout = open("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv","w")
+#fout = open("../results/cnn_lstm_supervised_test_predictions.csv","w")
 header = 'uniprot_accession,'+'standard_inchi_key,'+'predictions,'+'labels'+'\n'
 fout.write(header)
 for data in output_list:

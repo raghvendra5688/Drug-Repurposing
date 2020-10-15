@@ -70,25 +70,46 @@ conver_character <- function(df)
 }
 
 #Get data frames with errors
-rf_error_df <- get_error_info("../results/RF_supervised_test_predictions.csv")
-xgb_error_df <- get_error_info("../results/XGB_supervised_test_predictions.csv")
-svm_error_df <- get_error_info("../results/SVM_supervised_test_predictions.csv")
+glm_smiles_error_df <- get_error_info("../results/GLM_LS_Compound_LS_Protein_supervised_test_predictions.csv")
+rf_smiles_error_df <- get_error_info("../results/RF_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
+xgb_smiles_error_df <- get_error_info("../results/XGB_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
+svm_smiles_error_df <- get_error_info("../results/SVM_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
+
+glm_mfp_error_df <- get_error_info("../results/GLM_MFP_Compound_LS_Protein_supervised_test_predictions.csv")
+rf_mfp_error_df <- get_error_info("../results/RF_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
+xgb_mfp_error_df <- get_error_info("../results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
+svm_mfp_error_df <- get_error_info("../results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
+
 cnn_error_df <- get_error_info("../results/cnn_supervised_test_predictions.csv")
 lstm_error_df <- get_error_info("../results/lstm_supervised_test_predictions.csv")
 cnn_lstm_error_df <- get_error_info("../results/cnn_lstm_supervised_test_predictions.csv")
-gan_cnn_error_df <- get_error_info("../results/GAT_model_prediction_on_Test_set.csv")
+gan_cnn_error_df <- get_error_info("../results/gat_cnn_supervised_test_predictions.csv")
 
-rf_error_df <- conver_character(rf_error_df)
-svm_error_df <- conver_character(svm_error_df)
-xgb_error_df <- conver_character(xgb_error_df)
+glm_smiles_error_df <- conver_character(glm_smiles_error_df)
+rf_smiles_error_df <- conver_character(rf_smiles_error_df)
+svm_smiles_error_df <- conver_character(svm_smiles_error_df)
+xgb_smiles_error_df <- conver_character(xgb_smiles_error_df)
+
+glm_mfp_error_df <- conver_character(glm_mfp_error_df)
+rf_mfp_error_df <- conver_character(rf_mfp_error_df)
+svm_mfp_error_df <- conver_character(svm_mfp_error_df)
+xgb_mfp_error_df <- conver_character(xgb_mfp_error_df)
+
 cnn_error_df <- conver_character(cnn_error_df)
 lstm_error_df <- conver_character(lstm_error_df)
 cnn_lstm_error_df <- conver_character(cnn_lstm_error_df)
 gan_cnn_error_df <- conver_character(gan_cnn_error_df)
 
-rf_error_df <- rf_error_df[order(rf_error_df[,1],rf_error_df[,2]),]
-svm_error_df <- svm_error_df[order(svm_error_df[,1],svm_error_df[,2]),]
-xgb_error_df <- xgb_error_df[order(xgb_error_df[,1],xgb_error_df[,2]),]
+glm_smiles_error_df <- glm_smiles_error_df[order(glm_smiles_error_df[,1],glm_smiles_error_df[,2]),]
+rf_smiles_error_df <- rf_smiles_error_df[order(rf_smiles_error_df[,1],rf_smiles_error_df[,2]),]
+svm_smiles_error_df <- svm_smiles_error_df[order(svm_smiles_error_df[,1],svm_smiles_error_df[,2]),]
+xgb_smiles_error_df <- xgb_smiles_error_df[order(xgb_smiles_error_df[,1],xgb_smiles_error_df[,2]),]
+
+glm_mfp_error_df <- glm_mfp_error_df[order(glm_mfp_error_df[,1],glm_mfp_error_df[,2]),]
+rf_mfp_error_df <- rf_mfp_error_df[order(rf_mfp_error_df[,1],rf_mfp_error_df[,2]),]
+svm_mfp_error_df <- svm_mfp_error_df[order(svm_mfp_error_df[,1],svm_mfp_error_df[,2]),]
+xgb_mfp_error_df <- xgb_mfp_error_df[order(xgb_mfp_error_df[,1],xgb_mfp_error_df[,2]),]
+
 cnn_error_df <- cnn_error_df[order(cnn_error_df[,1],cnn_error_df[,2]),]
 lstm_error_df <- lstm_error_df[order(lstm_error_df[,1],lstm_error_df[,2]),]
 cnn_lstm_error_df <- cnn_lstm_error_df[order(cnn_lstm_error_df[,1],cnn_lstm_error_df[,2]),]
@@ -96,14 +117,13 @@ gan_cnn_error_df <- gan_cnn_error_df[order(gan_cnn_error_df[,1],gan_cnn_error_df
 
 #Make data frame with predictions
 N <- nrow(cnn_error_df)
-predictions_df <- data.frame(Method = c(rep("True",N),rep("SVM",N),rep("XGB",N),
-                                        rep("CNN",N),rep("LSTM",N),rep("CNN-LSTM",N),rep("GA-CNN",N)),
-                  Values = c(cnn_error_df$labels,svm_error_df$predictions,
-                             xgb_error_df$predictions,
-                             cnn_error_df$predictions,
-                             lstm_error_df$predictions,
-                             cnn_lstm_error_df$predictions,gan_cnn_error_df$predictions),
-                  Range = c(c(1:N),c(1:N),c(1:N),c(1:N),c(1:N),c(1:N),c(1:N)))
+predictions_df <- data.frame(Method = c(rep("True",N),rep("XGB (SMILES)",N),rep("SVM (MFP)",N),
+                                        rep("XGB (MFP)",N),rep("CNN",N),rep("GAT-CNN",N)),
+                  Values = c(cnn_error_df$labels,
+                             xgb_smiles_error_df$predictions,svm_mfp_error_df$predictions,
+                             xgb_mfp_error_df$predictions,cnn_error_df$predictions,
+                             gan_cnn_error_df$predictions),
+                  Range = c(c(1:N),c(1:N),c(1:N),c(1:N),c(1:N),c(1:N)))
 
 predictions_df$Values <- as.numeric(as.vector(predictions_df$Values))
 predictions_df$Range <- as.numeric(as.vector(predictions_df$Range))
@@ -111,27 +131,46 @@ sample <- seq(1,N,30)
 predictions_df_revised <- predictions_df[predictions_df$Range%in% sample,]
 
 g3 <- ggplot(predictions_df_revised,aes(Range,Values,colour=Method)) + geom_point() +
-  geom_smooth(se=FALSE,method=lm,formula=y ~ splines::bs(x, 12)) + #scale_colour_wsj("colors6") +
+  geom_smooth(se=FALSE,method=lm,formula=y ~ splines::bs(x, 12))+
   xlab("Test Samples") + ylab("Pchembl Value") + theme_bw() +
-  theme(axis.text.x = element_text(size=10),axis.text.y = element_text(size=10),
-        axis.title.x = element_text(size=14),
-        axis.title.y = element_text(size=14))
+  theme(axis.text.x = element_text(size=18),axis.text.y = element_text(size=18),
+        axis.title.x = element_text(size=22),
+        axis.title.y = element_text(size=22),
+        legend.title = element_text(size=18),
+        legend.text = element_text(size=16))
 
 #Save the image on disk
 ggsave(filename="../results/Fitting_plot_for_pchembl_values.pdf",plot = g3,
        device=pdf(),height=8,width=10,dpi = 300)
 dev.off()
 
+pdf(file="../results/GLM_SMILES_Residual_plot_for_pchembl_values.pdf",width=12,height=7,pointsize=16)
+get_correlation_plot(glm_smiles_error_df,"GLM (SMILES)")
+dev.off()
+pdf(file="../results/RF_SMILES_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(rf_smiles_error_df,"RF (SMILES)")
+dev.off()
+pdf(file="../results/SVM_SMILES_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(svm_smiles_error_df,"SVM (SMILES)")
+dev.off()
+pdf(file="../results/XGB_SMILES_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(xgb_smiles_error_df,"XGB (SMILES)")
+dev.off()
 
-pdf(file="../results/RF_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
-get_correlation_plot(rf_error_df,"RF")
+pdf(file="../results/GLM_MFP_Residual_plot_for_pchembl_values.pdf",width=12,height=7,pointsize=16)
+get_correlation_plot(glm_mfp_error_df,"GLM (MFP)")
 dev.off()
-pdf(file="../results/SVM_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
-get_correlation_plot(svm_error_df,"SVM")
+pdf(file="../results/RF_MFP_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(rf_mfp_error_df,"RF (MFP)")
 dev.off()
-pdf(file="../results/XGB_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
-get_correlation_plot(xgb_error_df,"XGB")
+pdf(file="../results/SVM_MFP_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(svm_mfp_error_df,"SVM (MFP)")
 dev.off()
+pdf(file="../results/XGB_MFP_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+get_correlation_plot(xgb_mfp_error_df,"XGB (MFP)")
+dev.off()
+
+
 pdf(file="../results/CNN_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
 get_correlation_plot(cnn_error_df,"CNN")
 dev.off()
@@ -141,6 +180,6 @@ dev.off()
 pdf(file="../results/CNN_LSTM_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
 get_correlation_plot(cnn_lstm_error_df,"CNN-LSTM")
 dev.off()
-pdf(file="../results/GAN_CNN_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
+pdf(file="../results/GAT_CNN_Residual_plot_for_pchembl_values.pdf",width = 12,height=7,pointsize=16)
 get_correlation_plot(gan_cnn_error_df,"GAT-CNN")
 dev.off()
