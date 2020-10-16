@@ -6,7 +6,11 @@ Here we provide the details of the steps followed to prepare the data for traini
 
 1. We first collected 556,134 SMILES strings for compounds used in the paper [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111) and combined it with 1,936,962 SMILES strings obtained from MOSES dataset [Molecular Sets (MOSES): A BenchmarkingPlatform for Molecular Generation Models](https://github.com/molecularsets/moses). This file is present in the `SMILES_Autoencoder/all_smiles.csv`
 
-2. We next run: `cd SMILES_Autoencoder; python cleanup_smiles.py all_smiles.csv all_smiles_revised.csv` to filter out compounds containing salts and remove stereochemical information. We also filter compounds based on their length, restricting the final set to include compounds whose SMILES sequence lengths are in [10,128] allowing small sized compounds as well as large size ligands to be part of our chemical search space which is relatively bigger than that used in [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111).
+2. We nex do the following:
+    
+    * Run `cd SMILES_Autoencoder`
+
+    * Run `python cleanup_smiles.py all_smiles.csv all_smiles_revised.csv` to filter out compounds containing salts and remove stereochemical information. We also filter compounds based on their length, restricting the final set to include compounds whose SMILES sequence lengths are in [10,128] allowing small sized compounds as well as large size ligands to be part of our chemical search space which is relatively bigger than that used in [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111).
 
 3. The resulting `all_smiles_revised.csv` contains 2,454,665 compounds.
 
@@ -30,9 +34,15 @@ We perform search on Pubmed (NCBI) to generate a good AID (Assay Id) list:
 
 All these data are available inside the `additional_data` folder in the `Compound_Virus_Interactions` folder
 
-We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Compound_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file
+We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Compound_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file.
 
-We run: `cd Compound_Virus_Interactions; gunzip additional_data/ns3_assays.pkl.gz ; python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
+We next do the following:
+ 
+    * Run `cd Compound_Virus_Interactions`
+
+    * Run `gunzip additional_data/ns3_assays.pkl.gz`
+
+    * Run `python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
 
 5. We also download curated compound-viral protein activites available in ChEMBL as `Compound_Viral_protein_Networks.csv`
 
@@ -42,21 +52,37 @@ We run: `python chembl_filter_compound_virus_interactions.py` to filter compound
 
 We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv` as a result inside the `Compound_Virus_Interactions` folder.
 
-7. We next run: `cd ../../scripts/ ;  python train_valid_test_deep_learning.py` which combines the `chembl_Filtered_Compound_Viral_Proteins_Network.csv` and `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
+7. We next to the following:
+
+    * Run `cd ../../scripts/`
+     
+    * Run `python train_valid_test_deep_learning.py` which combines the `chembl_Filtered_Compound_Viral_Proteins_Network.csv` and `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` resulting in training file `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and test file `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` in the `data` folder.
 
 
 # Compound Virus Activties for Traditional Supervised Learning Models based on Embeddings
 
 To generate the embedding representation of the compounds using the Teacher Forcing-LSTM SMILES Autoencoder, we need to follow the below mentioned steps:
 
-1. For training set, run `cd scripts` from home folder of repository and then run `python ls_generator_smiles.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_LS.csv`. This will result in the file `Train_Compound_LS.csv` in the `data` folder with same number of lines as in training file and 256 dimensions.
+1. For training set: 
+   
+   * Run `cd scripts` from home folder of repository. 
+
+   * Run `python ls_generator_smiles.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_LS.csv`. 
+
+     This will result in the file `Train_Compound_LS.csv` in the `data` folder with same number of lines as in training file and 256 dimensions.
 
 2. For test set run `python ls_generator_smiles.py --input Test_Compound_Viral_interactions_for_Supervised_Learning.csv --output Test_Compound_LS.csv` to obtain `Test_Compound_LS.csv` in the `data` folder.
 
 
 To generate the vector representation of the compounds using Morgan Fingerprints, we need to follow the below mentioned steps:
 
-1. For training set, run `cd scripts` from home of repository and then run `python ls_generator_morgan.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_MFP.csv`. This will result in the file `Train_Compound_MFP.csv` in the `data` folder with the same number of lines as training file and 256 dimensions.
+1. For training set:
+
+   * Run `cd scripts` from home of repository. 
+
+   * Run `python ls_generator_morgan.py --input Train_Compound_Viral_interactions_for_Supervised_Learning.csv --output Train_Compound_MFP.csv`. 
+
+   This will result in the file `Train_Compound_MFP.csv` in the `data` folder with the same number of lines as training file and 256 dimensions.
 
 2. For test set run `python ls_generator_morgan.py --input Test_Compound_Viral_interactions_for_Supervised_Learning.csv --output Test_Compound_MFP.csv` to obtain `Test_Compound_MFP.csv` in the `data` folder.
 
@@ -70,7 +96,9 @@ To produce the training and test set with vector representation of compounds fro
 
 1. Run `cd scripts`
 
-2. Run `python train_valid_test_supervised learning_on_ls.py` to produce `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` for SMILES autoencoder + protein autoencoder embedding combination for train and test set respectively. Similarly, we also obtain `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` for Morgan fingerprints + protein autoencoder embedding combination for train and test set respectively. All these files are produced in the `data` folder.
+2. Run `python train_valid_test_supervised learning_on_ls.py` to produce `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` for SMILES autoencoder + protein autoencoder embedding combination for train and test set respectively. 
+
+   Similarly, we also obtain `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` for Morgan fingerprints + protein autoencoder embedding combination for train and test set respectively. All these files are produced in the `data` folder.
 
 
 # Compound Virus Activities Prediction for SARS-COV-2 Viral proteins
