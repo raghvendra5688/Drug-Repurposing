@@ -32,8 +32,8 @@ print(train_compound_mfp_df.shape)
 print(test_compound_mfp_df.shape)
 
 #Load the train and test embedding representation for proteins
-train_protein_df = pd.read_csv("../data/Train_Compound_Viral_interactions_for_Supervised_Learning_Latent.csv",header=None)
-test_protein_df = pd.read_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning_Latent.csv",header=None)
+train_protein_df = pd.read_csv("../data/Train_Protein_LS.csv",header=None)
+test_protein_df = pd.read_csv("../data/Test_Protein_LS.csv",header=None)
 
 column_names = ['PLS_'+str(i) for i in range(64)]
 train_protein_df.columns = column_names
@@ -64,5 +64,4 @@ test_combined_mfp_ls_df = combine_df(test_with_label_df, test_compound_mfp_df, t
 train_combined_mfp_ls_df.to_csv("../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",index=False)
 test_combined_mfp_ls_df.to_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",index=False)
 # -
-
 

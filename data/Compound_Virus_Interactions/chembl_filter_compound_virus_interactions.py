@@ -103,6 +103,7 @@ only_compound_info = [[rev_inchikeys_smiles_list[i],to_use_compound_list[i]]for 
 only_compound_info = pd.DataFrame(only_compound_info, columns=['standard_inchi_key','canonical_smiles'])
 #only_compound_info.to_csv("chembl_Filtered_Compounds.csv",index=False)
 #only_compound_info.shape
+print("No of unique compounds: ",len(only_compound_info['standard_inchi_key'].unique()))
 
 # +
 #Get info about unique viral accession numbers

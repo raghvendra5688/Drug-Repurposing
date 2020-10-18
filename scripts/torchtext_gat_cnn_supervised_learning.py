@@ -72,6 +72,7 @@ def atom_features(atom):
 
 # -
 
+#Model architecture
 class Net(torch.nn.Module):
     def __init__(self):
 
@@ -167,14 +168,22 @@ def mse(y,f):
 
 # ################################## Test Mode #####################################
 
-#Option 0
-df = pd.read_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv")
+# +
+#Option 0 then use test set else use the sars_cov_2 test set
+option=1
+if (option==0):
+    df = pd.read_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv")
+else:
+    df = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv")
+
 protein_seqs = df['Sequence'].values.tolist()
 seq_voc_dic = "ACDEFGHIKLMNPQRSTVWXY"
 seq_dict = {voc:idx for idx,voc in enumerate(seq_voc_dic)}
 seq_dict_len = len(seq_dict)
 max_seq_len = 2000
 
+# +
+#Process the protein sequence
 def seq_dict_fun(prot):
     x = np.zeros(max_seq_len)
     x += 21
@@ -189,7 +198,6 @@ for i in range(len(protein_seqs)):
         else:
             protein_seqs[i][j] = 'X'
 
-
 PS = [seq_dict_fun(k) for k in protein_seqs]
 pt = []
 for i in range(len(PS)):
@@ -202,8 +210,7 @@ for i in range(len(protein_seqs)):
             continue
         else:
             protein_seqs[i][j] = 'X'
-
-
+# -
 
 smiles = df['canonical_smiles'].values.tolist()
 y = df['pchembl_value'].values.tolist()
@@ -211,6 +218,8 @@ uniprot = df['uniprot_accession']
 inchi = df['standard_inchi_key']
 
 
+# +
+#Get the features from graph to be used in the GAT model
 smile_graph = {}
 none_smiles = []
 got_g = []
@@ -223,10 +232,10 @@ for smile in smiles:
     else:
         got_g.append(smile)
         smile_graph[smile] = g
+# -
 
 
-smile_graphs = smile_graph
-
+#Get the features from graph model
 data_features = []
 data_edges = []
 data_c_size = []
@@ -251,25 +260,18 @@ for i in range(len(smiles)):
         GCNData.__setitem__('c_size', torch.LongTensor([c_size]))
         data_list.append(GCNData)
 
+# +
+#Load the test set and model
 test_X = data_list
 test_loader = DataLoader(test_X, batch_size=1, shuffle=False, drop_last=False)
 
-loss_fn = nn.MSELoss()
-best_mse = 1000
-calculated_mse = 1000
-
-
-def mse(y,f):
-    mse = ((y - f)**2).mean(axis=0)
-    return mse
-    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
 device = torch.device('cpu')
 model = Net().to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.0005)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 model.load_state_dict(torch.load('../models/gat_cnn_models/GAT_CNN_2000_3_pooling_checkpoint.pt',map_location=device))#['state_dict'])
 
+# +
+#Make the predictions on the test set
 model.eval()
 total_preds = torch.Tensor()
 total_labels = torch.Tensor()
@@ -295,10 +297,14 @@ for i in range(len(p)):
     tk.append(p[i])
     tk.append(t[i])
     scores.append(tk)
-
+    
 f1 = pd.DataFrame(scores)
 f1.columns =['uniprot_accession', 'standard_inchi_key', 'predictions', 'labels']
-f1.to_csv("GAT_CNN_Test_set.csv", index=False)
+if (option==0):
+    f1.to_csv("../results/gat_cnn_supervised_test_predictions.csv",index=False)
+else:
+    f1.to_csv("../results/gat_cnn_supervised_sars_cov_2_predictions.csv", index=False)
 print("Results saved...")
+# -
 
 

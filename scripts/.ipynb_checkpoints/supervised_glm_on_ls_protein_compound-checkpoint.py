@@ -17,7 +17,7 @@
 import os
 import pickle
 import re
-import pandas as pd
+import pandas as pd/
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sn
@@ -221,7 +221,7 @@ print(calculate_regression_metrics(y_test,y_pred_median))
 # -
 
 #Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
-input_option=0
+input_option=1
 if (input_option==0):
     big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
     total_length = len(big_X_test.columns)

@@ -59,7 +59,7 @@ print(interaction2_df.shape)
 # -
 
 #Unique no of viral organisms in the dataset
-np.size(np.union1d(big1_df['organism'].unique(),big2_df['organism'].unique()))
+print(np.size(np.union1d(big1_df['organism'].unique(),big2_df['organism'].unique())))
 plt.hist(interaction_df["pchembl_value"])
 
 # +

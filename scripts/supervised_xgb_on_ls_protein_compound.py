@@ -203,7 +203,7 @@ rev_output_df.to_csv("../results/XGB_"+data_type_options[input_option]+"supervis
 # shap.summary_plot(shap_values, X_train)
 # -
 #Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
-input_option=1
+input_option=0
 if (input_option==0):
     big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
     total_length = len(big_X_test.columns)

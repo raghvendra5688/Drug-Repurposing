@@ -65,4 +65,3 @@ train_combined_mfp_ls_df.to_csv("../data/Train_Compound_Viral_interactions_for_S
 test_combined_mfp_ls_df.to_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",index=False)
 # -
 
-
