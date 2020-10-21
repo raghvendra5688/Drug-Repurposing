@@ -45,11 +45,11 @@ We obtain the corresponding viral proteases for these viruses through Uniprot an
 
 We next do the following:
 
-  `cd Compound_Virus_Interactions`
+ * `cd Compound_Virus_Interactions`
 
-  `gunzip additional_data/ns3_assays.pkl.gz`
+ * `gunzip additional_data/ns3_assays.pkl.gz`
 
-  `python PreProcessing_More_Data.py ncbi_Filtered_Viral_Proteins.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv` 
+ * `python PreProcessing_More_Data.py ncbi_Filtered_Viral_Proteins.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv` 
 
 This results in `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
 
@@ -64,9 +64,9 @@ We obtain `chembl_Filtered_Compound_Viral_Proteins_Network.csv` as a result insi
 
 8. To merge and divide compound-viral protein activity into train and test set, we do the following:
 
-    `cd ../../scripts/`     
+   `cd ../../scripts/`     
 
-    `python train_valid_test_deep_learning.py chembl_Filtered_Compound_Viral_Proteins_Network.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv Train_Compound_Viral_interactions_for_Supervised_Learning.csv Test_Compound_Viral_interactions_for_Supervised_Learning.csv` 
+   `python train_valid_test_deep_learning.py chembl_Filtered_Compound_Viral_Proteins_Network.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv Train_Compound_Viral_interactions_for_Supervised_Learning.csv Test_Compound_Viral_interactions_for_Supervised_Learning.csv` 
 
 The output files `Train_Compound_Viral_interactions_for_Supervised_Learning.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning.csv` are in the `data` folder.
 

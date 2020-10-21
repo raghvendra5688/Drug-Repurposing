@@ -13,7 +13,6 @@ c) Spike protein
 
 An installation guide ("installation_guide.txt") is included in this repository which should complete all system requirements. 
 
-
 This package contains eight individual machine learning models. The four traditional machine learning models are as follows:
 
 a) GLM - `scripts/supervised_glm_on_ls_protein_compound.py`   
@@ -23,7 +22,7 @@ d) XGBoost - `scripts/supervised_xgb_on_ls_protein_compound.py`
 
 Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the **README** available in the `data` folder.
 
-For COVID-19 use case the code is run in test mode on: `data/COVID_19/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
+For COVID-19 use case the code is run in test mode on: `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
 
 Outputs:  
 
@@ -47,7 +46,16 @@ Runs on test mode:
 1. `data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv`  
 2. `data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv`
 
-Ouputs:  
+How to run:
+
+  `cd scripts`
+
+  `python torchtext_<method>_supervised_learning.py Train_Compound_Viral_interactions_for_Supervised_Learning.csv <type>_Compound_Viral_interactions_for_Supervised_Learning.csv <method>_supervised_<type>_test_predictions.csv`
+
+Here <method> can be either `cnn`, `lstm`, `cnn_lstm`, `gat_cnn` and <type> can be either `Test` or `sars_cov_2`.
+
+Ouput Files with location:
+
 a) CNN - `results/cnn_supervised_test_predictions.csv` and `results/cnn_supervised_sars_cov_2_test_predictions.csv`  
 b) LSTM - `results/lstm_supervised_test_predictions.csv` and `results/lstm_supervised_sars_cov_2_test_predictions.csv`  
 c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv` and `results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv`
