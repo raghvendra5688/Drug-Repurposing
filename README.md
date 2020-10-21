@@ -11,7 +11,7 @@ b) PL-pro
 c) Spike protein  
 
 
-An installation guide is included in this repository which should complete all system requirements. 
+An installation guide ("installation_guide.txt") is included in this repository which should complete all system requirements. 
 
 
 This package contains seven individual machine learning models. The four traditional machine learning models are as follows:
