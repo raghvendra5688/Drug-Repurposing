@@ -19,4 +19,4 @@ pip install -r requirements.txt
 conda install -c rdkit rdkit
 ````
 
-You may additionally install R with ggplot2 and ggthemes in order to use 'make_error_correlation_plots.R' which will give a comparison of performance on test sets.
+You may additionally install R with ggplot2 and ggthemes in order to use "_make_error_correlation_plots.R_" which will give a comparison of performance on test sets.
