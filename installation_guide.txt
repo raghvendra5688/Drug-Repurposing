@@ -7,7 +7,7 @@ conda create --name p36_repurposing python=3.6 pip
 conda activate p36_repurposing
 
 2. Install using pip required packages. Note that versioned requirements are being used here but any recent version should work:
-pip install -r vers.txt
+pip install -r requirements.txt
 
 3. Install RDkit from the RDkit channel
 conda install -c rdkit rdkit
