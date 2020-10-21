@@ -19,6 +19,6 @@ if __name__ == '__main__':
 
     out_df.to_csv(args.output,index=False)
     print("No of SMILES generated: ",out_df.shape[0])
-    print("SMILES done")
+    print("SMILES preparation done")
 
 

@@ -51,7 +51,7 @@ from rdkit.Chem import QED
 import random
 import json
 from sklearn.preprocessing import StandardScaler
-
+import argparse
 
 # +
 def get_assays(assay_path, assay_pickle_path):
@@ -114,112 +114,122 @@ def get_mols_for_assays(assays_no_mol_path, assays_with_mol_path):
 #get_mols_for_assays("additional_data/hiv_assays_no_mol.pkl", "additional_data/hiv_assays.pkl")
 # -
 
-#This datastructure is a dictionary of lists of dataframe already prepared
-assays = {}
-assays["sars"] = pickle.load(open("additional_data/sars_assays.pkl", "rb"))
-assays["mers"] = pickle.load(open("additional_data/mers_assays.pkl", "rb"))
-assays["ns3"] = pickle.load(open("additional_data/ns3_assays.pkl", "rb"))
-assays["hiv"] = pickle.load(open("additional_data/hiv_assays.pkl", "rb"))
-#os.system('rm additional_data/*.pkl additional_data/*.sdf additional_data/assay.csv')
+def get_compound_viral_protein_interactions():
+    #This datastructure is a dictionary of lists of dataframe already prepared
+    print("Load viral protein assays")
+    assays = {}
+    assays["sars"] = pickle.load(open("additional_data/sars_assays.pkl", "rb"))
+    assays["mers"] = pickle.load(open("additional_data/mers_assays.pkl", "rb"))
+    assays["ns3"] = pickle.load(open("additional_data/ns3_assays.pkl", "rb"))
+    assays["hiv"] = pickle.load(open("additional_data/hiv_assays.pkl", "rb"))
+    #os.system('rm additional_data/*.pkl additional_data/*.sdf additional_data/assay.csv')
 
-# It is worth mentioning here the different kinds of Bioactivities that an assay can report. Depending on what was relevant to the scientists involved in the study, various values can be used. Possibly most importantly for generating this dataset though is to not confuse the different kinds of activities. We will focus on IC50, which is the concentration of the compound at which 50% inhibition is observed. The value is normal reported as a "Micromolar concentration". The lower the value, the better the compound is at inhibiting the protein. It is important to not be tempted to use the "Activity" reported in some assays, which is normally a % and corresponds to how much that compound inhibits the protein at a given concentration. We're sticking with IC50 because this value is very information rich and actually many "Activity" experiments go into producing 1 IC50 value. Also they are more easily comparable, as we don't need to standardize concentration across the assays.
+    # It is worth mentioning here the different kinds of Bioactivities that an assay can report. Depending on what was relevant to the scientists involved in the study, various values can be used. Possibly most importantly for generating this dataset though is to not confuse the different kinds of activities. We will focus on IC50, which is the concentration of the compound at which 50% inhibition is observed. The value is normal reported as a "Micromolar concentration". The lower the value, the better the compound is at inhibiting the protein. It is important to not be tempted to use the "Activity" reported in some assays, which is normally a % and corresponds to how much that compound inhibits the protein at a given concentration. We're sticking with IC50 because this value is very information rich and actually many "Activity" experiments go into producing 1 IC50 value. Also they are more easily comparable, as we don't need to standardize concentration across the assays.
 
-# For this report we will focus on the "PubChem Standard Value" which is normally a standardized value using some metric (we will further narrow to only the metrics we want)
+    # For this report we will focus on the "PubChem Standard Value" which is normally a standardized value using some metric (we will further narrow to only the metrics we want)
 
-#This removes all the assays that do not have a column called "PubChem Standard Value"
-for a in ["sars", "mers", "ns3", "hiv"]:
-    print("Length of",str(a),"before removing")
-    print(len(assays[a]))
-    assays[a] = np.array(assays[a])
-    bad_list = []
-    good_list = []
-    for i in range(len(assays[a])):
-        ic50_cols = [col for col in assays[a][i].columns if 'PubChem Standard Value' in col]
-        if not ic50_cols:
-            bad_list.append(i)
-        else:
-            good_list.append(int(i))
+    #This removes all the assays that do not have a column called "PubChem Standard Value"
+    for a in ["sars", "mers", "ns3", "hiv"]:
+        print("Length of",str(a),"before removing")
+        print(len(assays[a]))
+        assays[a] = np.array(assays[a])
+        bad_list = []
+        good_list = []
+        for i in range(len(assays[a])):
+            ic50_cols = [col for col in assays[a][i].columns if 'PubChem Standard Value' in col]
+            if not ic50_cols:
+                bad_list.append(i)
+            else:
+                good_list.append(int(i))
 
-    bad_list = np.array(bad_list)
-    good_list = np.array(good_list, dtype='int32')
+        bad_list = np.array(bad_list)
+        good_list = np.array(good_list, dtype='int32')
 
-    assays[a] = assays[a][good_list]
-    print("Length of",str(a),"after removing")
-    print(len(assays[a]))
+        assays[a] = assays[a][good_list]
+        print("Length of",str(a),"after removing")
+        print(len(assays[a]))
 
-#Remove unnesessary columns
-a1 = {'sars':'SARS coronavirus',
-      'mers':'Middle East respiratory syndrome-related coronavirus',
-      'ns3':'Hepacivirus C',
-      'hiv':'Human immunodeficiency virus 1'}
-for a in ["sars", "mers", "ns3", "hiv"]:
-    for i in range(len(assays[a])):
-        assays[a][i] = assays[a][i][["Mol Object", "PubChem Standard Value", "Standard Type"]]
-        assays[a][i]['organism'] = a1[a]
+    #Remove unnesessary columns
+    a1 = {'sars':'SARS coronavirus',
+          'mers':'Middle East respiratory syndrome-related coronavirus',
+          'ns3':'Hepacivirus C',
+          'hiv':'Human immunodeficiency virus 1'}
+    for a in ["sars", "mers", "ns3", "hiv"]:
+        for i in range(len(assays[a])):
+            assays[a][i] = assays[a][i][["Mol Object", "PubChem Standard Value", "Standard Type"]]
+            assays[a][i]['organism'] = a1[a]
 
-#### Look at what different kind of metrics were used
-for a in ["sars", "mers", "ns3", "hiv"]:
-    for i in range(len(assays[a])):
-        print(assays[a][i][["Standard Type"]].values[-1])
+    #### Look at what different kind of metrics were used
+    for a in ["sars", "mers", "ns3", "hiv"]:
+        for i in range(len(assays[a])):
+            print(assays[a][i][["Standard Type"]].values[-1])
 
-# You can see that even the "standard" values can have quite a variance in what they mean. As mentioned above, we will focus on only IC50 values. We know from enzyme kinetics that when a ligand binds to a protein in an uncompetetive scenario (i.e. an assay) the Ki value determined is equal to the IC50, so we can include it too. Also the Kd value is a more general way of referring to the Ki value, so it can be included. 
+    # You can see that even the "standard" values can have quite a variance in what they mean. As mentioned above, we will focus on only IC50 values. We know from enzyme kinetics that when a ligand binds to a protein in an uncompetetive scenario (i.e. an assay) the Ki value determined is equal to the IC50, so we can include it too. Also the Kd value is a more general way of referring to the Ki value, so it can be included. 
 
-#concatenate all of the dataframe in the dictionary into a single list.
-#We lose the notion that they were once for different targets
-all_dfs = []
-for a in ["sars", "mers", "ns3", "hiv"]:
-    for i in range(len(assays[a])):
-        if assays[a][i][["Standard Type"]].values[-1][0] in {"IC50", "Ki", "Kd"}:
-            print(assays[a][i])
-            all_dfs.append(assays[a][i])
+    #concatenate all of the dataframe in the dictionary into a single list.
+    #We lose the notion that they were once for different targets
+    all_dfs = []
+    for a in ["sars", "mers", "ns3", "hiv"]:
+        for i in range(len(assays[a])):
+            if assays[a][i][["Standard Type"]].values[-1][0] in {"IC50", "Ki", "Kd"}:
+                print(assays[a][i])
+                all_dfs.append(assays[a][i])
 
-#Remove header info and concatenate them
-for i in range(len(all_dfs)):
-    all_dfs[i] = all_dfs[i].iloc[4:]
-final_df = pd.concat(all_dfs)
+    #Remove header info and concatenate them
+    for i in range(len(all_dfs)):
+        all_dfs[i] = all_dfs[i].iloc[4:]
+    final_df = pd.concat(all_dfs)
 
-#Take all the compounds with activites converted to -log10(x nM)
-final_df['PubChem Standard Value'] = final_df['PubChem Standard Value'].astype(float)
-final_df = final_df[final_df['PubChem Standard Value'].notna()]
-final_df['pchembl_value'] = -np.log10(final_df['PubChem Standard Value'])+6
-final_df
+    #Take all the compounds with activites converted to -log10(x nM)
+    final_df['PubChem Standard Value'] = final_df['PubChem Standard Value'].astype(float)
+    final_df = final_df[final_df['PubChem Standard Value'].notna()]
+    final_df['pchembl_value'] = -np.log10(final_df['PubChem Standard Value'])+6
+    final_df
 
-pickle.dump(final_df, open("additional_data/final_df.pkl", "wb"))
+    pickle.dump(final_df, open("additional_data/final_df.pkl", "wb"))
 
-# ### Method Specific-preparation
+    # ### Method Specific-preparation
 
-# Now moving on to preparing the dataset for use in the predictive model 
+    # Now moving on to preparing the dataset for use in the predictive model 
 
-df = pickle.load(open("additional_data/final_df.pkl", "rb"))
-df.index = range(df.shape[0])
+    df = pickle.load(open("additional_data/final_df.pkl", "rb"))
+    df.index = range(df.shape[0])
 
-#Remove samples which are not molecules
-ids = []
-all_molecules = df[['Mol Object']].values[:,0]
-for i in range(df.shape[0]):
-    mol = all_molecules[i]
-    if not mol:
-        ids.append(i)
-rev_df = df.drop(df.index[ids])
-rev_df.index
+    #Remove samples which are not molecules
+    ids = []
+    all_molecules = df[['Mol Object']].values[:,0]
+    for i in range(df.shape[0]):
+        mol = all_molecules[i]
+        if not mol:
+            ids.append(i)
+    rev_df = df.drop(df.index[ids])
+    rev_df.index
 
-rev_df.insert(5, 'canonical_smiles', [Chem.MolToSmiles(x, isomericSmiles=False) for x in rev_df[['Mol Object']].values[:,0]], True)
-rev_df.insert(6, 'standard_inchi_key', [Chem.inchi.MolToInchiKey(x) for x in rev_df[['Mol Object']].values[:,0]], True)
-rev_df
+    rev_df.insert(5, 'canonical_smiles', [Chem.MolToSmiles(x, isomericSmiles=False) for x in rev_df[['Mol Object']].values[:,0]], True)
+    rev_df.insert(6, 'standard_inchi_key', [Chem.inchi.MolToInchiKey(x) for x in rev_df[['Mol Object']].values[:,0]], True)
+    rev_df
 
-#Remove samples where compounds have SMILES with length>128 or length<10
-salt_indexes = []
-rev_df = rev_df.reset_index()
-for i in range(len(rev_df)):
-    if "." in rev_df[["canonical_smiles"]].values[i][0]:
-        salt_indexes.append(i)
-    if len(rev_df[['canonical_smiles']].values[i][0])>128 or len(rev_df[['canonical_smiles']].values[i][0])<10:
-        salt_indexes.append(i)
+    #Remove samples where compounds have SMILES with length>128 or length<10
+    print("Removing salts and compounds with sequence length>128 or <10")
+    salt_indexes = []
+    rev_df = rev_df.reset_index()
+    for i in range(len(rev_df)):
+        if "." in rev_df[["canonical_smiles"]].values[i][0]:
+            salt_indexes.append(i)
+        if len(rev_df[['canonical_smiles']].values[i][0])>128 or len(rev_df[['canonical_smiles']].values[i][0])<10:
+            salt_indexes.append(i)
+    rev_df = rev_df.drop(rev_df.index[salt_indexes])
+    return(rev_df)
 
-rev_df = rev_df.drop(rev_df.index[salt_indexes])
-load_sequence_info = pd.read_csv("ncbi_Filtered_Viral_Proteins.csv",header='infer',sep=",")
-load_sequence_info
 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Obtain compound-viral protein interactions for HIV, SARS1, HepC and MERS from NCBI')
+    parser.add_argument('input1', help='input viral protein sequence file from ncbi')
+    parser.add_argument('output', help='compound-viral protein interactions file for ncbi')
+    args = parser.parse_args()
+    
+    load_sequence_info = pd.read_csv(args.input1,header='infer',sep=",")
+    load_sequence_info
 # +
 #only_drug_info = rev_df[["standard_inchi_key","canonical_smiles"]].values.tolist()
 #only_drug_info = set(tuple(x) for x in only_drug_info)
@@ -227,11 +237,11 @@ load_sequence_info
 #only_drug_info.to_csv("ncbi_Filtered_Compounds.csv",index=False)
 #only_drug_info
 # -
-
-rev_df.rename({"Standard Type":"standard_type"},axis=1,inplace=True)
-output_df = pd.merge(load_sequence_info,rev_df.iloc[:,[4,7,6,3,5]],on="organism",how="right",sort=True)
-output_df.to_csv("ncbi_Filtered_Compound_Viral_proteins_Network.csv",index=False)
-output_df.drop_duplicates(subset=["uniprot_accession"])
+    rev_df = get_compound_viral_protein_interactions();
+    rev_df.rename({"Standard Type":"standard_type"},axis=1,inplace=True)
+    output_df = pd.merge(load_sequence_info,rev_df.iloc[:,[4,7,6,3,5]],on="organism",how="right",sort=True)
+    output_df.to_csv(args.output,index=False)
+    print("Generated Compound-viral protein interactions with labels from NCBI")
 
 # +
 #drug_list = only_drug_info["canonical_smiles"].values.tolist()
