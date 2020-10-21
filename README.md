@@ -14,7 +14,7 @@ c) Spike protein
 An installation guide ("installation_guide.txt") is included in this repository which should complete all system requirements. 
 
 
-This package contains seven individual machine learning models. The four traditional machine learning models are as follows:
+This package contains eight individual machine learning models. The four traditional machine learning models are as follows:
 
 a) GLM - `scripts/supervised_glm_on_ls_protein_compound.py`   
 b) Random Forests - `scripts/supervised_rf_on_ls_protein_compound.py`  
@@ -36,7 +36,7 @@ c) SVM - `results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `
 d) XGB - `results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/XGB_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/XGB_supervised_sars_cov2_test_predictions.csv`   
 
 
-The three end-to-end deep learning models:  
+The four end-to-end deep learning models:  
 
 a) CNN - `scripts/torchtext_cnn_supervised_learning.py`  
 b) LSTM - `scripts/torchtext_lstm_supervised_learning.py`  
