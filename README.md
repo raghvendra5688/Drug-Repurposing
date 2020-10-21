@@ -21,7 +21,7 @@ a) Random Forests - `scripts/supervised_rf_on_ls_protein_compound.py`
 b) SVM - `scripts/supervised_svm_on_ls_protein_compound.py`  
 c) XGBoost - `scripts/supervised_xgb_on_ls_protein_compound.py`
 
-Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the README available in the `data` folder.
+Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the **README** available in the `data` folder.
 
 For COVID-19 use case the code is run in test mode on: `data/COVID_19/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
 
