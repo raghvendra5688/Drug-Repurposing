@@ -11,13 +11,10 @@ b) PL-pro
 c) Spike protein  
 
 
-Code Requirements:  
-a) python3, pandas, pickle, numpy, sklearn, scipy all of which are available in latest Anaconda package  
-b) xgboost version 0.90, shap 
-c) pytorch, torchtext, RDKIT, pubchempy, jupytext, SmilesPE, cuda (for GPU)  
+An installation guide is included in this repository which should complete all system requirements. 
 
 
-The four traditional machine learning models:
+This package contains seven individual machine learning models. The four traditional machine learning models are as follows:
 
 a) GLM - `scripts/supervised_glm_on_ls_protein_compound.py`
 a) Random Forests - `scripts/supervised_rf_on_ls_protein_compound.py`  
@@ -53,12 +50,12 @@ c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv` and `results/cn
 d) GAT-CNN - `results/gat_cnn_supervised_test_predictions.csv` and `results/gat_cnn_supervised_sars_cov_2_test_predictions.csv`
 
 
-To compare performance of methods on test set:  
+To compare the performance of the methods on the test set:  
 a) Install R, Librarires- ggplot2, ggthemes  
 b) Run `R make_error_correlation_plots.R`  
 
 
-To get ranked list of compounds for SARS-COV-2 viral proteins:   
+To get a ranked list of compounds for SARS-COV-2 viral proteins:   
 a) Run `sars_cov_2_postprocessing.py`
 
 Outputs:  
