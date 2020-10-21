@@ -10,14 +10,21 @@ Here we provide the details of the steps followed to prepare the data for traini
     
     * Run `cd SMILES_Autoencoder`
 
-    * Run `python cleanup_smiles.py all_smiles.csv all_smiles_revised.csv` to filter out compounds containing salts and remove stereochemical information. We also filter compounds based on their length, restricting the final set to include compounds whose SMILES sequence lengths are in [10,128] allowing small sized compounds as well as large size ligands to be part of our chemical search space which is relatively bigger than that used in [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111).
+    * Run `python cleanup_smiles.py all_smiles.csv all_smiles_revised.csv` to filter out compounds containing salts and remove stereochemical information. 
+    
+3. The resulting output file `all_smiles_revised.csv` contains 2,459,695 compounds.
 
-3. The resulting `all_smiles_revised.csv` contains 2,454,665 compounds.
+4. We next run: `python prepare_smiles_autoencoder.py` to obtain output file `all_smiles_revised_final.csv`. We filter compounds based on their length, restricting the final set to include compounds whose SMILES sequence lengths are in [10,128] allowing small sized compounds as well as large size ligands to be part of our chemical search space which is relatively bigger than that used in [Generative Recurrent Networks for De Novo Drug Design](https://doi.org/10.1002/minf.201700111).
 
-4. We next run: `python prepare_smiles_autoencoder.py` to obtain `all_smiles_revised_final.csv`
+5. The output file `all_smiles_revised_final.csv` should have 2,454,665 compounds.
 
-5. To train the SMILES autoencoder model we run: `cd ../../scripts/; python torchtext_smiles_autoencoder.py`. This results in `torchtext_checkpoint.pt` in the models folder.
+6. To train the SMILES autoencoder model we run: 
 
+   `cd ../../scripts/`; 
+
+   `python torchtext_smiles_autoencoder.py ../data/SMILES_Autoencoder/all_smiles_revised_final.csv`. 
+
+This results in `models/lstm_out/torchtext_checkpoint.pt` in the models folder.
 
 
 # Compound Virus Activities for End-to-End Deep Learning Models
@@ -38,11 +45,11 @@ We obtain the corresponding viral proteases for these viruses through Uniprot an
 
 We next do the following:
  
-    * Run `cd Compound_Virus_Interactions`
+    `cd Compound_Virus_Interactions`
 
-    * Run `gunzip additional_data/ns3_assays.pkl.gz`
+    `gunzip additional_data/ns3_assays.pkl.gz`
 
-    * Run `python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
+    `python Preprocessing_More_Data.py` to obtain `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
 
 5. We also download curated compound-viral protein activites available in ChEMBL as `Compound_Viral_protein_Networks.csv`
 

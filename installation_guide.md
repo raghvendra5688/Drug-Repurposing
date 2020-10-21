@@ -1,6 +1,5 @@
-
-
-The following assumes that you have conda and walks you through creating the required conda environment. Please note that since RDkit is not guaranteed to run on the latest version of python, our suggestion is that you use python 3.6 or earlier. 
+The following assumes that you have conda and walks you through creating the required conda environment. You can install conda from the following link (https://docs.anaconda.com/anaconda/install/). 
+Please note that since RDkit is not guaranteed to run on the latest version of python, our suggestion is that you use python 3.6 or earlier. 
 
 1. Create and activate a new python environment and install pip:
 ````
