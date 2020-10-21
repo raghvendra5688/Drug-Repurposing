@@ -44,12 +44,12 @@ All these data are available inside the `additional_data` folder in the `Compoun
 We obtain the corresponding viral proteases for these viruses through Uniprot and maintain them in `Compound_Virus_Interactions/ncbi_Filtered_Viral_Proteins.csv` file.
 
 We next do the following:
- 
-    `cd Compound_Virus_Interactions`
 
-    `gunzip additional_data/ns3_assays.pkl.gz`
+  `cd Compound_Virus_Interactions`
 
-    `python PreProcessing_More_Data.py ncbi_Filtered_Viral_Proteins.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv` 
+  `gunzip additional_data/ns3_assays.pkl.gz`
+
+  `python PreProcessing_More_Data.py ncbi_Filtered_Viral_Proteins.csv ncbi_Filtered_Compound_Viral_Proteins_Network.csv` 
 
 This results in `ncbi_Filtered_Compound_Viral_Proteins_Network.csv` files inside the `Compound_Virus_Interactions` folder.
 
