@@ -80,10 +80,10 @@ rf_mfp_error_df <- get_error_info("../results/RF_MFP_Compound_LS_Proteinsupervis
 xgb_mfp_error_df <- get_error_info("../results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
 svm_mfp_error_df <- get_error_info("../results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
 
-cnn_error_df <- get_error_info("../results/cnn_supervised_test_predictions.csv")
-lstm_error_df <- get_error_info("../results/lstm_supervised_test_predictions.csv")
-cnn_lstm_error_df <- get_error_info("../results/cnn_lstm_supervised_test_predictions.csv")
-gan_cnn_error_df <- get_error_info("../results/gat_cnn_supervised_test_predictions.csv")
+cnn_error_df <- get_error_info("../results/cnn_supervised_Test_predictions.csv")
+lstm_error_df <- get_error_info("../results/lstm_supervised_Test_predictions.csv")
+cnn_lstm_error_df <- get_error_info("../results/cnn_lstm_supervised_Test_predictions.csv")
+gan_cnn_error_df <- get_error_info("../results/gat_cnn_supervised_Test_predictions.csv")
 
 glm_smiles_error_df <- conver_character(glm_smiles_error_df)
 rf_smiles_error_df <- conver_character(rf_smiles_error_df)

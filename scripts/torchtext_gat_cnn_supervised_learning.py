@@ -23,6 +23,7 @@ from torch_geometric.nn import GATConv
 from torch_geometric.nn import global_add_pool, global_mean_pool
 import matplotlib.pyplot as plt
 import pickle
+import argparse
 
 #Convert SMILES to graph representation
 def smile_to_graph(smile):
@@ -154,10 +155,6 @@ class Net(torch.nn.Module):
         return out
 
 # +
-#Calculate loss function
-loss_fn = nn.MSELoss()
-best_mse = 1000
-calculated_mse = 1000
 
 def mse(y,f):
     mse = ((y - f)**2).mean(axis=0)
@@ -169,142 +166,148 @@ def mse(y,f):
 # ################################## Test Mode #####################################
 
 # +
-#Option 0 then use test set else use the sars_cov_2 test set
-option=1
-if (option==0):
-    df = pd.read_csv("../data/Test_Compound_Viral_interactions_for_Supervised_Learning.csv")
-else:
-    df = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv")
+if __name__ == '__main__':
 
-protein_seqs = df['Sequence'].values.tolist()
-seq_voc_dic = "ACDEFGHIKLMNPQRSTVWXY"
-seq_dict = {voc:idx for idx,voc in enumerate(seq_voc_dic)}
-seq_dict_len = len(seq_dict)
-max_seq_len = 2000
+    parser = argparse.ArgumentParser(description='Run GAT-CNN based end-to-end deep learning model for compound-viral acitivty prediction')
+    parser.add_argument('input1', help='Training file for end-to-end deep learning models')
+    parser.add_argument('input2', help='Test file for end-to-end deep learning model')
+    parser.add_argument('output', help='Output of GAT-CNN based end-to-end deep learning model')
+    args = parser.parse_args()
 
-# +
-#Process the protein sequence
-def seq_dict_fun(prot):
-    x = np.zeros(max_seq_len)
-    x += 21
-    for i, ch in enumerate(prot[:max_seq_len]): 
-        x[i] = seq_dict[ch]
-    return x  
 
-for i in range(len(protein_seqs)):
-    for j in range(len(protein_seqs[i])):
-        if(protein_seqs[i][j] in seq_voc_dic):
-            continue
+    df = pd.read_csv("../data/"+args.input2)
+    protein_seqs = df['Sequence'].values.tolist()
+    seq_voc_dic = "ACDEFGHIKLMNPQRSTVWXY"
+    seq_dict = {voc:idx for idx,voc in enumerate(seq_voc_dic)}
+    seq_dict_len = len(seq_dict)
+    max_seq_len = 2000
+
+    # +
+    #Process the protein sequence
+    def seq_dict_fun(prot):
+        x = np.zeros(max_seq_len)
+        x += 21
+        for i, ch in enumerate(prot[:max_seq_len]): 
+            x[i] = seq_dict[ch]
+        return x  
+
+    for i in range(len(protein_seqs)):
+        for j in range(len(protein_seqs[i])):
+            if(protein_seqs[i][j] in seq_voc_dic):
+                continue
+            else:
+                protein_seqs[i][j] = 'X'
+
+    PS = [seq_dict_fun(k) for k in protein_seqs]
+    pt = []
+    for i in range(len(PS)):
+        pt.append(PS[i])
+    protein_inputs = np.array(pt)
+
+    for i in range(len(protein_seqs)):
+        for j in range(len(protein_seqs[i])):
+            if(protein_seqs[i][j] in seq_voc_dic):
+                continue
+            else:
+                protein_seqs[i][j] = 'X'
+    # -
+
+    smiles = df['canonical_smiles'].values.tolist()
+    y = df['pchembl_value'].values.tolist()
+    uniprot = df['uniprot_accession']
+    inchi = df['standard_inchi_key']
+
+
+    # +
+    #Get the features from graph to be used in the GAT model
+    smile_graph = {}
+    none_smiles = []
+    got_g = []
+
+    for smile in smiles:
+        g = smile_to_graph(smile)
+        if(g is None):
+            print(smile)
+            none_smiles.append(smile)
         else:
-            protein_seqs[i][j] = 'X'
+            got_g.append(smile)
+            smile_graph[smile] = g
+    # -
 
-PS = [seq_dict_fun(k) for k in protein_seqs]
-pt = []
-for i in range(len(PS)):
-    pt.append(PS[i])
-protein_inputs = np.array(pt)
 
-for i in range(len(protein_seqs)):
-    for j in range(len(protein_seqs[i])):
-        if(protein_seqs[i][j] in seq_voc_dic):
-            continue
+    #Get the features from graph model
+    data_features = []
+    data_edges = []
+    data_c_size = []
+    labels = []
+    data_list = []
+    for i in range(len(smiles)):
+        if(smiles[i] == 'Nc1ccc([S+]2(=O)Nc3nccc[n+]3['):
+            print(i)
         else:
-            protein_seqs[i][j] = 'X'
-# -
+            c_size, features, edge_index = smile_graph[smiles[i]]
+            data_features.append(features)
+            data_edges.append(edge_index)
+            data_c_size.append(c_size)
+            labels = y[i]
+            target = protein_inputs[i]
 
-smiles = df['canonical_smiles'].values.tolist()
-y = df['pchembl_value'].values.tolist()
-uniprot = df['uniprot_accession']
-inchi = df['standard_inchi_key']
+            GCNData = DATA.Data(x=torch.Tensor(features),
+                                    edge_index=torch.LongTensor(edge_index).transpose(1, 0),
+                                    y=torch.FloatTensor([labels]))
+            GCNData.target = torch.LongTensor([target])
 
+            GCNData.__setitem__('c_size', torch.LongTensor([c_size]))
+            data_list.append(GCNData)
 
-# +
-#Get the features from graph to be used in the GAT model
-smile_graph = {}
-none_smiles = []
-got_g = []
-
-for smile in smiles:
-    g = smile_to_graph(smile)
-    if(g is None):
-        print(smile)
-        none_smiles.append(smile)
-    else:
-        got_g.append(smile)
-        smile_graph[smile] = g
-# -
+    # +
 
 
-#Get the features from graph model
-data_features = []
-data_edges = []
-data_c_size = []
-labels = []
-data_list = []
-for i in range(len(smiles)):
-    if(smiles[i] == 'Nc1ccc([S+]2(=O)Nc3nccc[n+]3['):
-        print(i)
-    else:
-        c_size, features, edge_index = smile_graph[smiles[i]]
-        data_features.append(features)
-        data_edges.append(edge_index)
-        data_c_size.append(c_size)
-        labels = y[i]
-        target = protein_inputs[i]
+    #Calculate loss function
+    loss_fn = nn.MSELoss()
+    best_mse = 1000
+    calculated_mse = 1000
 
-        GCNData = DATA.Data(x=torch.Tensor(features),
-                                edge_index=torch.LongTensor(edge_index).transpose(1, 0),
-                                y=torch.FloatTensor([labels]))
-        GCNData.target = torch.LongTensor([target])
+    #Load the test set and model
+    test_X = data_list
+    test_loader = DataLoader(test_X, batch_size=1, shuffle=False, drop_last=False)
 
-        GCNData.__setitem__('c_size', torch.LongTensor([c_size]))
-        data_list.append(GCNData)
+    device = torch.device('cpu')
+    model = Net().to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+    model.load_state_dict(torch.load('../models/gat_cnn_models/GAT_CNN_2000_3_pooling_checkpoint.pt',map_location=device))#['state_dict'])
 
-# +
-#Load the test set and model
-test_X = data_list
-test_loader = DataLoader(test_X, batch_size=1, shuffle=False, drop_last=False)
+    # +
+    #Make the predictions on the test set
+    model.eval()
+    total_preds = torch.Tensor()
+    total_labels = torch.Tensor()
 
-device = torch.device('cpu')
-model = Net().to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
-model.load_state_dict(torch.load('../models/gat_cnn_models/GAT_CNN_2000_3_pooling_checkpoint.pt',map_location=device))#['state_dict'])
+    print("Predicting...")
+    total_pred = []
+    total_labels = []
+    with torch.no_grad():
+        for data in test_loader:
+            data = data.to(device)
+            output = model(data)
+            total_labels.append(data.y.cpu().data.numpy().tolist()[0])
+            total_pred.append(output.cpu().data.numpy()[0].tolist()[0])
+    t = np.array(total_labels)
+    p = np.array(total_pred)
+    pred1 = mse(t,p)
+    print("Saving results...")
+    scores = []
+    for i in range(len(p)):
+        tk = []
+        tk.append(uniprot[i])
+        tk.append(inchi[i])
+        tk.append(p[i])
+        tk.append(t[i])
+        scores.append(tk)
+        
+    f1 = pd.DataFrame(scores)
+    f1.columns =['uniprot_accession', 'standard_inchi_key', 'predictions', 'labels']
+    f1.to_csv("../results/"+args.output, index=False)
+    print("Finished running GAT-CNN based end-to-end deep learning model")
 
-# +
-#Make the predictions on the test set
-model.eval()
-total_preds = torch.Tensor()
-total_labels = torch.Tensor()
-
-print("Predicting...")
-total_pred = []
-total_labels = []
-with torch.no_grad():
-    for data in test_loader:
-        data = data.to(device)
-        output = model(data)
-        total_labels.append(data.y.cpu().data.numpy().tolist()[0])
-        total_pred.append(output.cpu().data.numpy()[0].tolist()[0])
-t = np.array(total_labels)
-p = np.array(total_pred)
-pred1 = mse(t,p)
-print("Saving results...")
-scores = []
-for i in range(len(p)):
-    tk = []
-    tk.append(uniprot[i])
-    tk.append(inchi[i])
-    tk.append(p[i])
-    tk.append(t[i])
-    scores.append(tk)
-    
-f1 = pd.DataFrame(scores)
-f1.columns =['uniprot_accession', 'standard_inchi_key', 'predictions', 'labels']
-if (option==0):
-    f1.to_csv("../results/gat_cnn_supervised_test_predictions.csv",index=False)
-else:
-    f1.to_csv("../results/gat_cnn_supervised_sars_cov_2_predictions.csv", index=False)
-print("Results saved...")
-# -
-
-
+    # -

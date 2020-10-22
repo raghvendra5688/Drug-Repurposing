@@ -37,49 +37,9 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.utils.fixes import loguniform
 import scipy
+import argparse
 
 from misc import save_model, load_model, regression_results, grid_search_cv
-
-# +
-# Options of settings with different Xs and Ys 
-options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
-           ".."] #(to be continued)
-
-data_type_options = ["LS_Compound_LS_Protein",
-                     "MFP_Compound_LS_Protein",
-                     ".."
-                    ]
-
-# input option is also used to control the model parameters below
-input_option = 0
-
-classification_task = False
-classification_th = 85
-
-data_type=data_type_options[input_option]
-filename = options[input_option]
-
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
-
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
-
-X_train = X
-y_train = Y
-print(X_train[:10])
-print(X_train.shape,y_train.shape)
-print(X_train.columns)
-print(big_df.isnull().sum().sum())
-
 
 # +
 def calculate_classification_metrics(labels, predictions):
@@ -135,116 +95,168 @@ def supervised_learning_steps(method,scoring,data_type,task,model,params,X_train
     return(gs)
 
 
-# +
-#Build the Generalized Linear Regression model
-if classification_task:
-    model = linear_model.LogisticRegression()
-else:
-    model = linear_model.LinearRegression()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Make predictions on test set of compound viral protein interaction pairs using GLM method')
+    parser.add_argument('input1', help='Train compound-viral protein activities file containing latent space representations for compounds and proteins')
+    parser.add_argument('input2', help='Test compound-viral protein pairs file containing latent space representations for compounds and proteins')
+    parser.add_argument('output', help='Output of prediction of GLM method for the test file')
+    args = parser.parse_args()
 
-# Grid parameters
-if classification_task:
-    params_lr = [
-       {
-            'C': scipy.stats.randint(20, 500),
-            'fit_intercept': [True, False],
-       }
-    ]
-else:
-    params_lr = [
-       {
-            'normalize': [True, False],
-            'fit_intercept': [True, False],
-       }
-    ]
 
-n_iter = 1500
-scaler = preprocessing.MinMaxScaler()
-X_train_copy = scaler.fit_transform(X_train)
 
-if classification_task:
-    lr_gs=supervised_learning_steps("glm","roc_auc",data_type,classification_task,model,params_lr,X_train_copy,y_train,n_iter)
-else:
-    lr_gs=supervised_learning_steps("glm","r2",data_type,classification_task,model,params_lr,X_train_copy,y_train,n_iter)
+    # +
+    # Options of settings with different Xs and Ys 
+    #options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+    #           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
+    #           ".."] #(to be continued)
+
+    #data_type_options = ["LS_Compound_LS_Protein",
+    #                     "MFP_Compound_LS_Protein",
+    #                     ".."
+    #                    ]
+
+    # input option is also used to control the model parameters below
+    #input_option = 0
+
+    #classification_task = False
+    #classification_th = 85
+
+    #data_type=data_type_options[input_option]
+    filename = "../data/"+args.input1
+
+    with open(filename, "rb") as file:
+        print("Loading Training data: ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_train = X
+    y_train = Y
+    print(X_train[:10])
+    print(X_train.shape,y_train.shape)
+    print(X_train.columns)
+    print(big_df.isnull().sum().sum())
+    print("Loaded training file")
+
+    # +
+    '''
+    #Build the Generalized Linear Regression model
+    if classification_task:
+        model = linear_model.LogisticRegression()
+    else:
+        model = linear_model.LinearRegression()
+
+    # Grid parameters
+    if classification_task:
+        params_lr = [
+           {
+                'C': scipy.stats.randint(20, 500),
+                'fit_intercept': [True, False],
+           }
+        ]
+    else:
+        params_lr = [
+           {
+                'normalize': [True, False],
+                'fit_intercept': [True, False],
+           }
+        ]
+
+    n_iter = 1500
+    scaler = preprocessing.MinMaxScaler()
+    X_train_copy = scaler.fit_transform(X_train)
+
+    if classification_task:
+        lr_gs=supervised_learning_steps("glm","roc_auc",data_type,classification_task,model,params_lr,X_train_copy,y_train,n_iter)
+    else:
+        lr_gs=supervised_learning_steps("glm","r2",data_type,classification_task,model,params_lr,X_train_copy,y_train,n_iter)
+        
+    print(lr_gs.cv_results_)
+    save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("glm","glm",data_type))
+
+
+    # +
+    #Test the generalized linear regression model on separate test set
+    np.max(lr_gs.cv_results_["mean_test_score"])
+
+    file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+                 "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
+
+    filename = file_list[input_option]
+
+    with open(filename, "rb") as file:
+        print("Loading ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_test = X
+    y_test = Y
+    lr_best = lr_gs.best_estimator_
+    y_pred_lr=lr_best.predict(scaler.transform(X_test))
+    print(calculate_regression_metrics(y_test,y_pred_lr))
+
+    #Write the prediction of GLM model
+    meta_X["predictions"]=y_pred_lr
+    meta_X["labels"]=y_test
+    rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
+    rev_output_df.to_csv("../results/GLM_"+data_type_options[input_option]+"_supervised_test_predictions.csv",index=False)
+
+    # +
+    #Dummy mean regressor and median regressor
+    strategy = 'mean'
+    model = dummy.DummyRegressor(strategy=strategy)
+    model.fit(X_train,y_train)
+    y_pred_mean = model.predict(X_test)
+    print(calculate_regression_metrics(y_test,y_pred_mean))
+
+    strategy = 'median'
+    model = dummy.DummyRegressor(strategy=strategy)
+    model.fit(X_train,y_train)
+    y_pred_median = model.predict(X_test)
+    print(calculate_regression_metrics(y_test,y_pred_median))
+    # -
+    '''
+
+    #Get results for test file
+    print("Loading test file")
+    test_filename = args.input2
+    big_X_test = pd.read_csv("../data/"+args.input2,header='infer',sep=",")
+    total_length = len(big_X_test.columns)
+    X_test = big_X_test.iloc[:,range(5,total_length)]
     
-print(lr_gs.cv_results_)
-save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("glm","glm",data_type))
-
-
-# +
-#Test the generalized linear regression model on separate test set
-np.max(lr_gs.cv_results_["mean_test_score"])
-
-file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-             "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
-
-filename = file_list[input_option]
-
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
-
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
-
-X_test = X
-y_test = Y
-lr_best = lr_gs.best_estimator_
-y_pred_lr=lr_best.predict(scaler.transform(X_test))
-print(calculate_regression_metrics(y_test,y_pred_lr))
-
-#Write the prediction of GLM model
-meta_X["predictions"]=y_pred_lr
-meta_X["labels"]=y_test
-rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
-rev_output_df.to_csv("../results/GLM_"+data_type_options[input_option]+"_supervised_test_predictions.csv",index=False)
-
-# +
-#Dummy mean regressor and median regressor
-strategy = 'mean'
-model = dummy.DummyRegressor(strategy=strategy)
-model.fit(X_train,y_train)
-y_pred_mean = model.predict(X_test)
-print(calculate_regression_metrics(y_test,y_pred_mean))
-
-strategy = 'median'
-model = dummy.DummyRegressor(strategy=strategy)
-model.fit(X_train,y_train)
-y_pred_median = model.predict(X_test)
-print(calculate_regression_metrics(y_test,y_pred_median))
-# -
-
-#Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
-input_option=1
-if (input_option==0):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
-    total_length = len(big_X_test.columns)
-    X_test = big_X_test.iloc[:,range(5,total_length)]
-    lr_best = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
-    scaler = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_scaling_gs.pk")
+    if ("MFP" not in args.input1):
+        lr_best = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/glm_models/glm_LS_Compound_LS_Protein_scaling_gs.pk")
+    else:
+        lr_best = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_scaling_gs.pk")
+    
+    print("Making Predictions")
     y_pred = lr_best.predict(scaler.transform(X_test))
 
     meta_X_test = big_X_test.iloc[:,[0,2]].copy()
     meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/GLM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
-elif (input_option==1):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
-    total_length = len(big_X_test.columns)
-    X_test = big_X_test.iloc[:,range(5,total_length)]
-    lr_best = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
-    scaler = load_model("../models/glm_models/glm_MFP_Compound_LS_Protein_scaling_gs.pk")
-    y_pred = lr_best.predict(scaler.transform(X_test))
+    if ("sars_cov_2" in args.input2):
+        meta_X_test.loc[:,'labels']=0
+    else:
+        meta_X_test.loc[:,'labels']=big_X_test.iloc[:,4].copy()
 
-    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-    meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/GLM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
-
+    out_file = args.output
+    meta_X_test.to_csv("../results/"+out_file,index=False)
+    print("Finished writing predictions")
 

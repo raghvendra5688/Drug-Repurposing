@@ -38,46 +38,8 @@ from sklearn.utils.fixes import loguniform
 import scipy
 
 from misc import save_model, load_model, regression_results, grid_search_cv
+import argparse
 
-# +
-# Options of settings with different Xs and Ys 
-options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
-           ".."] #(to be continued)
-
-data_type_options = ["LS_Compound_LS_Protein",
-                     "MFP_Compound_LS_Protein",
-                     ".."
-                    ]
-
-# input option is also used to control the model parameters below
-input_option = 0
-
-classification_task = False
-classification_th = 85
-
-data_type=data_type_options[input_option]
-filename = options[input_option]
-
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
-
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
-
-X_train = X
-y_train = Y
-print(X_train[:10])
-print(X_train.shape,y_train.shape)
-print(X_train.columns)
-print(big_df.isnull().sum().sum())
 
 
 # +
@@ -135,101 +97,201 @@ def supervised_learning_steps(method,scoring,data_type,task,model,params,X_train
     return(gs)
 
 
-# +
-if classification_task:
-    model = svm.SVC(max_iter=10000)
-else:
-    model = svm.SVR(max_iter=10000)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Make predictions on test set of compound viral protein interaction pairs using SVM method')
+    parser.add_argument('input1', help='Train compound-viral protein activities file containing latent space representations for compounds and proteins')
+    parser.add_argument('input2', help='Test compound-viral protein pairs file containing latent space representations for compounds and proteins')
+    parser.add_argument('output', help='Output of prediction of SVM method for the test file')
+    args = parser.parse_args()
 
-# Grid parameters
-param_svm = [
-             {'C': loguniform(1e-1, 1e4),
-              'kernel': ['poly','rbf'],
-              'gamma': loguniform(1e-4, 1e1)
-             },
-]
-
-n_iter = 300
-scaler = preprocessing.MinMaxScaler()
-X_train_copy = scaler.fit_transform(X_train)
-
-if classification_task:
-    svm_gs=supervised_learning_steps("svm","roc_auc",data_type,classification_task,model,param_svm,X_train_copy,y_train,n_iter)
-else:
-    svm_gs=supervised_learning_steps("svm","r2", data_type,classification_task,model,param_svm,X_train_copy,y_train,n_iter)
-
-svm_gs.cv_results_
-save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("svm","svm",data_type))
-
-# +
-np.max(svm_gs.cv_results_['mean_test_score'])
-
-file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-             "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
-
-filename = file_list[input_option]
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
-
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
-
-X_test = X
-y_test = Y
-X_test_copy = scaler.transform(X_test)
-svm_best = svm_gs.best_estimator_
-y_pred_svm=svm_best.predict(X_test_copy)
-print(calculate_regression_metrics(y_test,y_pred_svm))
-
-#Write the predictions
-meta_X["predictions"]=y_pred_svm
-meta_X["labels"]=y_test
-rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
-rev_output_df.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
-
-# +
-## load JS visualization code to notebook (Doesn't work for random forest)
-#shap.initjs()
-
-## explain the model's predictions using SHAP values
-#explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
-#shap_values = explainer.shap_values(X_train)
-#shap.summary_plot(shap_values, X_train)
-# +
-#Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
-input_option=0
-if (input_option==0):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
-    total_length = len(big_X_test.columns)
-    X_test = big_X_test.iloc[:,range(5,total_length)]
-    svm_best = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
-    scaler = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_scaling_gs.pk")
-    y_pred = svm_best.predict(scaler.transform(X_test))
-
-    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-    meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
     
-elif (input_option==1):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
+    '''
+    # +
+    # Options of settings with different Xs and Ys 
+    options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+               "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
+               ".."] #(to be continued)
+
+    data_type_options = ["LS_Compound_LS_Protein",
+                         "MFP_Compound_LS_Protein",
+                         ".."
+                        ]
+
+    # input option is also used to control the model parameters below
+    input_option = 0
+
+    classification_task = False
+    classification_th = 85
+
+    data_type=data_type_options[input_option]
+    filename = options[input_option]
+
+    with open(filename, "rb") as file:
+        print("Loading ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_train = X
+    y_train = Y
+    print(X_train[:10])
+    print(X_train.shape,y_train.shape)
+    print(X_train.columns)
+    print(big_df.isnull().sum().sum())
+    # +
+    if classification_task:
+        model = svm.SVC(max_iter=10000)
+    else:
+        model = svm.SVR(max_iter=10000)
+
+    # Grid parameters
+    param_svm = [
+                 {'C': loguniform(1e-1, 1e4),
+                  'kernel': ['poly','rbf'],
+                  'gamma': loguniform(1e-4, 1e1)
+                 },
+    ]
+
+    n_iter = 300
+    scaler = preprocessing.MinMaxScaler()
+    X_train_copy = scaler.fit_transform(X_train)
+
+    if classification_task:
+        svm_gs=supervised_learning_steps("svm","roc_auc",data_type,classification_task,model,param_svm,X_train_copy,y_train,n_iter)
+    else:
+        svm_gs=supervised_learning_steps("svm","r2", data_type,classification_task,model,param_svm,X_train_copy,y_train,n_iter)
+
+    svm_gs.cv_results_
+    save_model(scaler, "%s_models/%s_%s_scaling_gs.pk" % ("svm","svm",data_type))
+
+    # +
+    np.max(svm_gs.cv_results_['mean_test_score'])
+
+    file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+                 "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
+
+    filename = file_list[input_option]
+    with open(filename, "rb") as file:
+        print("Loading ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_test = X
+    y_test = Y
+    X_test_copy = scaler.transform(X_test)
+    svm_best = svm_gs.best_estimator_
+    y_pred_svm=svm_best.predict(X_test_copy)
+    print(calculate_regression_metrics(y_test,y_pred_svm))
+
+    #Write the predictions
+    meta_X["predictions"]=y_pred_svm
+    meta_X["labels"]=y_test
+    rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
+    rev_output_df.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
+
+    # +
+    ## load JS visualization code to notebook (Doesn't work for random forest)
+    #shap.initjs()
+
+    ## explain the model's predictions using SHAP values
+    #explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
+    #shap_values = explainer.shap_values(X_train)
+    #shap.summary_plot(shap_values, X_train)
+    # +
+    #Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
+    input_option=0
+    if (input_option==0):
+        big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
+        total_length = len(big_X_test.columns)
+        X_test = big_X_test.iloc[:,range(5,total_length)]
+        svm_best = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_scaling_gs.pk")
+        y_pred = svm_best.predict(scaler.transform(X_test))
+
+        meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+        meta_X_test.loc[:,'predictions']=y_pred
+        meta_X_test.loc[:,'labels']=0
+        meta_X_test.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+        
+    elif (input_option==1):
+        big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
+        total_length = len(big_X_test.columns)
+        X_test = big_X_test.iloc[:,range(5,total_length)]
+        svm_best = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_scaling_gs.pk")
+        y_pred = svm_best.predict(scaler.transform(X_test))
+
+        meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+        meta_X_test.loc[:,'predictions']=y_pred
+        meta_X_test.loc[:,'labels']=0
+        meta_X_test.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+    # -
+    '''
+
+    filename = "../data/"+args.input1
+
+    with open(filename, "rb") as file:
+        print("Loading Training data: ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_train = X
+    y_train = Y
+    print(X_train[:10])
+    print(X_train.shape,y_train.shape)
+    print(X_train.columns)
+    print(big_df.isnull().sum().sum())
+    print("Loaded training file")
+
+    #Get results for test file
+    print("Loading test file")
+    test_filename = args.input2
+    big_X_test = pd.read_csv("../data/"+args.input2,header='infer',sep=",")
     total_length = len(big_X_test.columns)
     X_test = big_X_test.iloc[:,range(5,total_length)]
-    svm_best = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
-    scaler = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_scaling_gs.pk")
+
+    if ("MFP" not in args.input1):
+        svm_best = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/svm_models/svm_LS_Compound_LS_Protein_scaling_gs.pk")
+    else:
+        svm_best = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+        scaler = load_model("../models/svm_models/svm_MFP_Compound_LS_Protein_scaling_gs.pk")
+
+    print("Making Predictions")
     y_pred = svm_best.predict(scaler.transform(X_test))
 
     meta_X_test = big_X_test.iloc[:,[0,2]].copy()
     meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/SVM_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
-# -
+    
+    if ("sars_cov_2" in args.input2):
+        meta_X_test.loc[:,'labels']=0
+    else:
+        meta_X_test.loc[:,'labels']=big_X_test.iloc[:,4].copy()
 
-
+    out_file = args.output
+    meta_X_test.to_csv("../results/"+out_file,index=False)
+    
+    print("Finished writing predictions")

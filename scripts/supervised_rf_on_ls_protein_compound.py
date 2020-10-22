@@ -39,46 +39,7 @@ from sklearn.utils.fixes import loguniform
 import scipy
 
 from misc import save_model, load_model, regression_results, grid_search_cv
-
-# +
-# Options of settings with different Xs and Ys 
-options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-           "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
-           ".."] #(to be continued)
-
-data_type_options = ["LS_Compound_LS_Protein",
-                     "MFP_Compound_LS_Protein",
-                     ".."
-                    ]
-
-# input option is also used to control the model parameters below
-input_option = 0
-
-classification_task = False
-classification_th = 85
-
-data_type=data_type_options[input_option]
-filename = options[input_option]
-
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
-
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
-
-X_train = X
-y_train = Y
-print(X_train[:10])
-print(X_train.shape,y_train.shape)
-print(X_train.columns)
-print(big_df.isnull().sum().sum())
+import argparse
 
 
 # +
@@ -136,110 +97,206 @@ def supervised_learning_steps(method,scoring,data_type,task,model,params,X_train
     return(gs)
 
 
-# +
-if classification_task:
-    model = ensemble.RandomForestRegressor(n_estimators=100, criterion='auc',
-                                            max_depth=None, min_samples_split=2,
-                                            min_samples_leaf=1, min_weight_fraction_leaf=0.0,
-                                            max_features='auto', max_leaf_nodes=None,
-                                            min_impurity_decrease=0.0, min_impurity_split=None,
-                                            bootstrap=True, oob_score=False,
-                                            n_jobs=-1, random_state=328, verbose=1,
-                                            warm_start=False, ccp_alpha=0.0, max_samples=None)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Make predictions on test set of compound viral protein interaction pairs using RF method')
+    parser.add_argument('input1', help='Train compound-viral protein activities file containing latent space representations for compounds and proteins')
+    parser.add_argument('input2', help='Test compound-viral protein pairs file containing latent space representations for compounds and proteins')
+    parser.add_argument('output', help='Output of prediction of RF method for the test file')
+    args = parser.parse_args()
 
-else:
-    model = ensemble.RandomForestRegressor(n_estimators=100, criterion='mse',
-                                            max_depth=None, min_samples_split=2,
-                                            min_samples_leaf=1, min_weight_fraction_leaf=0.0,
-                                            max_features='auto', max_leaf_nodes=None,
-                                            min_impurity_decrease=0.0, min_impurity_split=None,
-                                            bootstrap=True, oob_score=False,
-                                            n_jobs=-1, random_state=328, verbose=1,
-                                            warm_start=False, ccp_alpha=0.0, max_samples=None)
+    '''
+    # +
+    # Options of settings with different Xs and Ys 
+    options = ["../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+               "../data/Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",
+               ".."] #(to be continued)
+
+    data_type_options = ["LS_Compound_LS_Protein",
+                         "MFP_Compound_LS_Protein",
+                         ".."
+                        ]
+
+    # input option is also used to control the model parameters below
+    input_option = 0
+
+    classification_task = False
+    classification_th = 85
+
+    data_type=data_type_options[input_option]
+    filename = options[input_option]
+
+    with open(filename, "rb") as file:
+        print("Loading ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+
+    X_train = X
+    y_train = Y
+    print(X_train[:10])
+    print(X_train.shape,y_train.shape)
+    print(X_train.columns)
+    print(big_df.isnull().sum().sum())
+
+    # +
+    if classification_task:
+        model = ensemble.RandomForestRegressor(n_estimators=100, criterion='auc',
+                                                max_depth=None, min_samples_split=2,
+                                                min_samples_leaf=1, min_weight_fraction_leaf=0.0,
+                                                max_features='auto', max_leaf_nodes=None,
+                                                min_impurity_decrease=0.0, min_impurity_split=None,
+                                                bootstrap=True, oob_score=False,
+                                                n_jobs=-1, random_state=328, verbose=1,
+                                                warm_start=False, ccp_alpha=0.0, max_samples=None)
+
+    else:
+        model = ensemble.RandomForestRegressor(n_estimators=100, criterion='mse',
+                                                max_depth=None, min_samples_split=2,
+                                                min_samples_leaf=1, min_weight_fraction_leaf=0.0,
+                                                max_features='auto', max_leaf_nodes=None,
+                                                min_impurity_decrease=0.0, min_impurity_split=None,
+                                                bootstrap=True, oob_score=False,
+                                                n_jobs=-1, random_state=328, verbose=1,
+                                                warm_start=False, ccp_alpha=0.0, max_samples=None)
 
 
-# Grid parameters
-param_rf = {"n_estimators": scipy.stats.randint(20, 500),
-               "max_depth": scipy.stats.randint(1, 9),
-               "min_samples_leaf": scipy.stats.randint(1, 10),
-               "max_features": scipy.stats.uniform.ppf([0.1,0.7])
-}
+    # Grid parameters
+    param_rf = {"n_estimators": scipy.stats.randint(20, 500),
+                   "max_depth": scipy.stats.randint(1, 9),
+                   "min_samples_leaf": scipy.stats.randint(1, 10),
+                   "max_features": scipy.stats.uniform.ppf([0.1,0.7])
+    }
 
-n_iter=300
+    n_iter=300
 
-if classification_task:
-    rf_gs=supervised_learning_steps("rf","roc_auc",data_type,classification_task,model,param_rf,X_train,y_train,n_iter)
-else:
-    rf_gs=supervised_learning_steps("rf","r2",data_type,classification_task,model,param_rf,X_train,y_train,n_iter)
+    if classification_task:
+        rf_gs=supervised_learning_steps("rf","roc_auc",data_type,classification_task,model,param_rf,X_train,y_train,n_iter)
+    else:
+        rf_gs=supervised_learning_steps("rf","r2",data_type,classification_task,model,param_rf,X_train,y_train,n_iter)
 
-rf_gs.cv_results_
+    rf_gs.cv_results_
 
-# +
-rf_gs = load_model("rf_models/rf_"+data_type_options[input_option]+"_regressor_gs.pk")
-np.max(rf_gs.cv_results_["mean_test_score"])
+    # +
+    rf_gs = load_model("rf_models/rf_"+data_type_options[input_option]+"_regressor_gs.pk")
+    np.max(rf_gs.cv_results_["mean_test_score"])
 
-file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
-             "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
+    file_list = ["../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",
+                 "../data/Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv"]
 
-filename = file_list[input_option]
-with open(filename, "rb") as file:
-    print("Loading ", filename)
-    big_df = pd.read_csv(filename, header='infer', delimiter=",")
-    total_length = len(big_df.columns)
-    X = big_df.iloc[:,range(5,total_length)]
-    Y = big_df[['pchembl_value']].to_numpy().flatten()
-    meta_X = big_df.iloc[:,[0,1,2,3]]
-    print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+    filename = file_list[input_option]
+    with open(filename, "rb") as file:
+        print("Loading ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
 
-print(X.columns)
-n_samples = len(X)
-indices = np.arange(n_samples)
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
 
-X_test = X
-y_test = Y
-rf_best = rf_gs.best_estimator_
-y_pred_rf=rf_best.predict(X_test)
-print(calculate_regression_metrics(y_test,y_pred_rf))
+    X_test = X
+    y_test = Y
+    rf_best = rf_gs.best_estimator_
+    y_pred_rf=rf_best.predict(X_test)
+    print(calculate_regression_metrics(y_test,y_pred_rf))
 
-#Write the output in the results folder
-meta_X["predictions"]=y_pred_rf
-meta_X["labels"]=y_test
-rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
-rev_output_df.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
+    #Write the output in the results folder
+    meta_X["predictions"]=y_pred_rf
+    meta_X["labels"]=y_test
+    rev_output_df = meta_X.iloc[:,[0,2,4,5]].copy()
+    rev_output_df.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_test_predictions.csv",index=False)
 
-# +
-## load JS visualization code to notebook (Doesn't work for random forest)
-#shap.initjs()
+    # +
+    ## load JS visualization code to notebook (Doesn't work for random forest)
+    #shap.initjs()
 
-## explain the model's predictions using SHAP values
-#explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
-#shap_values = explainer.shap_values(X_train)
-#shap.summary_plot(shap_values, X_train)
-# -
-#Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
-input_option=1
-if (input_option==0):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
+    ## explain the model's predictions using SHAP values
+    #explainer = shap.TreeExplainer(xgb_gs.best_estimator_)
+    #shap_values = explainer.shap_values(X_train)
+    #shap.summary_plot(shap_values, X_train)
+    # -
+    #Get results for SARS-COV-2 for SMILES embeddig + protein embedding (input option = 0) or Morgan fingerprints + protein emedding  (input_option = 1)
+    input_option=1
+    if (input_option==0):
+        big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv",header='infer',sep=",")
+        total_length = len(big_X_test.columns)
+        X_test = big_X_test.iloc[:,range(5,total_length)]
+        rf_best = load_model("../models/rf_models/rf_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+        y_pred = rf_best.predict(X_test)
+
+        meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+        meta_X_test.loc[:,'predictions']=y_pred
+        meta_X_test.loc[:,'labels']=0
+        meta_X_test.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+    elif (input_option==1):
+        big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
+        total_length = len(big_X_test.columns)
+        X_test = big_X_test.iloc[:,range(5,total_length)]
+        rf_best = load_model("../models/rf_models/rf_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+        y_pred = rf_best.predict(X_test)
+
+        meta_X_test = big_X_test.iloc[:,[0,2]].copy()
+        meta_X_test.loc[:,'predictions']=y_pred
+        meta_X_test.loc[:,'labels']=0
+        meta_X_test.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
+    '''
+
+    filename = "../data/"+args.input1
+    with open(filename, "rb") as file:
+        print("Loading Training data: ", filename)
+        big_df = pd.read_csv(filename, header='infer', delimiter=",")
+        total_length = len(big_df.columns)
+        X = big_df.iloc[:,range(5,total_length)]
+        Y = big_df[['pchembl_value']].to_numpy().flatten()
+        meta_X = big_df.iloc[:,[0,1,2,3]]
+        print("Lengths --> X = %d, Y = %d" % (len(X), len(Y)))
+
+    print(X.columns)
+    n_samples = len(X)
+    indices = np.arange(n_samples)
+    
+    X_train = X
+    y_train = Y
+    print(X_train[:10])
+    print(X_train.shape,y_train.shape)
+    print(X_train.columns)
+    print(big_df.isnull().sum().sum())
+    print("Loaded training file")
+
+
+    #Get results for test file
+    print("Loading test file")
+    test_filename = args.input2
+    big_X_test = pd.read_csv("../data/"+args.input2,header='infer',sep=",")
     total_length = len(big_X_test.columns)
     X_test = big_X_test.iloc[:,range(5,total_length)]
-    rf_best = load_model("../models/rf_models/rf_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+
+    if ("MFP" not in args.input1):
+        rf_best = load_model("../models/rf_models/rf_LS_Compound_LS_Protein_regressor_best_estimator.pk")
+    else:
+        rf_best = load_model("../models/rf_models/rf_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
+
+    print("Making Predictions")
     y_pred = rf_best.predict(X_test)
 
     meta_X_test = big_X_test.iloc[:,[0,2]].copy()
     meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
-elif (input_option==1):
-    big_X_test = pd.read_csv("../data/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv",header='infer',sep=",")
-    total_length = len(big_X_test.columns)
-    X_test = big_X_test.iloc[:,range(5,total_length)]
-    rf_best = load_model("../models/rf_models/rf_MFP_Compound_LS_Protein_regressor_best_estimator.pk")
-    y_pred = rf_best.predict(X_test)
+    if ("sars_cov_2" in args.input2):
+        meta_X_test.loc[:,'labels']=0
+    else:
+        meta_X_test.loc[:,'labels']=big_X_test.iloc[:,4].copy()
 
-    meta_X_test = big_X_test.iloc[:,[0,2]].copy()
-    meta_X_test.loc[:,'predictions']=y_pred
-    meta_X_test.loc[:,'labels']=0
-    meta_X_test.to_csv("../results/RF_"+data_type_options[input_option]+"supervised_sars_cov_2_predictions.csv",index=False)
-
-
+    out_file = args.output
+    meta_X_test.to_csv("../results/"+out_file,index=False)
+    print("Finished writing predictions")
 

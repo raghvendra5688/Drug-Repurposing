@@ -20,19 +20,24 @@ b) Random Forests - `scripts/supervised_rf_on_ls_protein_compound.py`
 c) SVM - `scripts/supervised_svm_on_ls_protein_compound.py`  
 d) XGBoost - `scripts/supervised_xgb_on_ls_protein_compound.py`
 
-Training is done on either `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` or on `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` with test set `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` produced in `data` folder by following the instructions in the **README** available in the `data` folder.
+How to run:
 
-For COVID-19 use case the code is run in test mode on: `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv`
+ * `cd scripts`
+
+ * `python supervised_<method>_on_ls_protein_compound.py Train_Compound_Viral_interactions_for_Supervised_Learning_with_<compound_features>_LS.csv <type>_Compound_Viral_interactions_for_Supervised_Learning_with_<compound_features>_LS.csv <method>_<compound_features>_Compound_LS_Protein_supervised_<type>_predictions.csv`
+
+Here `<method>` can be either `glm`, `rf`, `svm`, `xgb`, `<compound_features>` can be either `MFP` or `LS` and `<type>` can either `Test` or `sars_cov_2`.
+
+The files for training and testing (`Test` or `sars_cov_2`) are produced in `data` folder by following the instructions in the **README** available in the `data` folder.
 
 Outputs:  
 
-a) GLM - `results/GLM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/GLM_LS_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/GLM_supervised_sars_cov2_test_predictions.csv` 
+a) GLM - `results/GLM_MFP_Compound_LS_Protein_supervised_Test_predictions.csv`, `results/GLM_LS_Compound_LS_Protein_supervised_Test_predictions.csv`, `results/GLM_supervised_sars_cov2_predictions.csv` 
 
-b) RF - `results/RF_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/RF_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/RF_supervised_sars_cov2_test_predictions.csv`  
+b) RF - `results/RF_MFP_Compound_LS_Protein_supervised_Test_predictions.csv`, `results/RF_LS_Compound_LS_Protein_supervised_Test_predictions.csv` and `results/RF_supervised_sars_cov2_predictions.csv`  
 
-c) SVM - `results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/SVM_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/SVM_supervised_sars_cov2_test_predictions.csv`  
-
-d) XGB - `results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv`, `results/XGB_LS_Compound_LS_Proteinsupervised_test_predictions.csv` and `results/XGB_supervised_sars_cov2_test_predictions.csv`   
+c) SVM - `results/SVM_MFP_Compound_LS_Protein_supervised_Test_predictions.csv`, `results/SVM_LS_Compound_LS_Protein_supervised_test_predictions.csv` and `results/SVM_supervised_sars_cov2_predictions.csv`  
+d) XGB - `results/XGB_MFP_Compound_LS_Protein_supervised_Test_predictions.csv`, `results/XGB_LS_Compound_LS_Protein_supervised_Test_predictions.csv` and `results/XGB_supervised_sars_cov2_predictions.csv`   
 
 
 The four end-to-end deep learning models:  
@@ -48,18 +53,18 @@ Runs on test mode:
 
 How to run:
 
-  `cd scripts`
+ * `cd scripts`
 
-  `python torchtext_<method>_supervised_learning.py Train_Compound_Viral_interactions_for_Supervised_Learning.csv <type>_Compound_Viral_interactions_for_Supervised_Learning.csv <method>_supervised_<type>_test_predictions.csv`
+ * `python torchtext_<method>_supervised_learning.py Train_Compound_Viral_interactions_for_Supervised_Learning.csv <type>_Compound_Viral_interactions_for_Supervised_Learning.csv <method>_supervised_<type>_predictions.csv`
 
-Here <method> can be either `cnn`, `lstm`, `cnn_lstm`, `gat_cnn` and <type> can be either `Test` or `sars_cov_2`.
+Here `<method>` can be either `cnn`, `lstm`, `cnn_lstm`, `gat_cnn` and `<type>` can be either `Test` or  `sars_cov_2`.
 
 Ouput Files with location:
 
-a) CNN - `results/cnn_supervised_test_predictions.csv` and `results/cnn_supervised_sars_cov_2_test_predictions.csv`  
-b) LSTM - `results/lstm_supervised_test_predictions.csv` and `results/lstm_supervised_sars_cov_2_test_predictions.csv`  
-c) CNN-LSTM - `results/cnn_lstm_supervised_test_predictions.csv` and `results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv`
-d) GAT-CNN - `results/gat_cnn_supervised_test_predictions.csv` and `results/gat_cnn_supervised_sars_cov_2_test_predictions.csv`
+a) CNN - `results/cnn_supervised_Test_predictions.csv` and `results/cnn_supervised_sars_cov_2_predictions.csv`  
+b) LSTM - `results/lstm_supervised_Test_predictions.csv` and `results/lstm_supervised_sars_cov_2_predictions.csv`  
+c) CNN-LSTM - `results/cnn_lstm_supervised_Test_predictions.csv` and `results/cnn_lstm_supervised_sars_cov_2_predictions.csv`
+d) GAT-CNN - `results/gat_cnn_supervised_Test_predictions.csv` and `results/gat_cnn_supervised_sars_cov_2_predictions.csv`
 
 
 To compare the performance of the methods on the test set:  
