@@ -1,15 +1,13 @@
-Mean (Dummy)  & 1.100 $pm$ 0.003 & 1.936 $\pm$ 0.006 & - & - \\
-Median (Dummy) & 1.002 $pm$ 0.002 & 2.310 $\pm$ 0.004 & - & - \\
-GLM (SMILES)  & 0.665 $\pm$ 0.004  & 0.874 $\pm$ 0.011  & 0.74 $\pm$ 0.004  & 0.548 $\pm$ 0.005\\
-RF (SMILES)  & 0.559 $\pm$ 0.005  & 0.629 $\pm$ 0.011  & 0.825 $\pm$ 0.002  & 0.681 $\pm$ 0.003\\
-SVM (SMILES)  & 0.508 $\pm$ 0.002  & 0.478 $\pm$ 0.006  & 0.869 $\pm$ 0.001  & 0.755 $\pm$ 0.002\\
-XGBoost (SMILES)  & 0.452 $\pm$ 0.004  & 0.42 $\pm$ 0.009  & 0.885 $\pm$ 0.002  & 0.783 $\pm$ 0.004\\
-GLM (MFP)  & 0.647 $\pm$ 0.004  & 0.775 $\pm$ 0.014  & 0.773 $\pm$ 0.003  & 0.598 $\pm$ 0.005\\
-RF (MFP)  & 0.53 $\pm$ 0.004  & 0.552 $\pm$ 0.009  & 0.849 $\pm$ 0.003  & 0.72 $\pm$ 0.004\\
-SVM (MFP)  & 0.44 $\pm$ 0.003  & 0.362 $\pm$ 0.007  & 0.903 $\pm$ 0.002  & 0.815 $\pm$ 0.004\\
-XGBoost (MFP)  & 0.402 $\pm$ 0.003  & 0.325 $\pm$ 0.007  & 0.912 $\pm$ 0.002  & 0.831 $\pm$ 0.004\\
-CNN  & 0.449 $\pm$ 0.002  & 0.393 $\pm$ 0.006  & 0.893 $\pm$ 0.002  & 0.798 $\pm$ 0.003\\
-LSTM  & 0.499 $\pm$ 0.005  & 0.512 $\pm$ 0.012  & 0.863 $\pm$ 0.003  & 0.745 $\pm$ 0.005\\
-CNN-LSTM  & 0.518 $\pm$ 0.004  & 0.56 $\pm$ 0.009  & 0.849 $\pm$ 0.003  & 0.721 $\pm$ 0.005\\
-GAT-CNN  & 0.436 $\pm$ 0.003  & 0.409 $\pm$ 0.007  & 0.89 $\pm$ 0.002  & 0.792 $\pm$ 0.004\\
-$\mu_{\text{best}}$ (5 Methods) & 0.400 $\pm$ 0.003 & 0.317 $\pm$ 0.005 & 0.916 $\pm$ 0.001 & 0.840 $\pm$ 0.002 \\
+GLM & SMILES Emedding + Protein Embedding & 0.664 $\pm$ 0.003 & 0.874 $\pm$ 0.008 & 0.738 $\pm$ 0.003 & 0.545 $\pm$ 0.005 & \\ 
+RF & SMILES Emedding + Protein Embedding & 0.560 $\pm$ 0.005 & 0.632 $\pm$ 0.011 & 0.823 $\pm$ 0.003 & 0.678 $\pm$ 0.004 & \\ 
+SVM & SMILES Emedding + Protein Embedding & 0.508 $\pm$ 0.003 & 0.478 $\pm$ 0.005 & 0.870 $\pm$ 0.002 & 0.756 $\pm$ 0.004 & \\ 
+XGBoost & SMILES Emedding + Protein Embedding & 0.452 $\pm$ 0.003 & 0.422 $\pm$ 0.006 & 0.885 $\pm$ 0.002 & 0.783 $\pm$ 0.004 & \\ 
+GLM & Morgan Fingerprint + Protein Embedding & 0.648 $\pm$ 0.004 & 0.780 $\pm$ 0.009 & 0.773 $\pm$ 0.003 & 0.598 $\pm$ 0.004 & \\ 
+RF & Morgan Fingerprint + Protein Embedding & 0.530 $\pm$ 0.003 & 0.552 $\pm$ 0.007 & 0.848 $\pm$ 0.002 & 0.719 $\pm$ 0.004 & \\ 
+SVM & Morgan Fingerprint + Protein Embedding & 0.438 $\pm$ 0.002 & 0.357 $\pm$ 0.005 & 0.904 $\pm$ 0.002 & 0.817 $\pm$ 0.003 & \\ 
+XGBoost & Morgan Fingerprint + Protein Embedding & 0.404 $\pm$ 0.002 & 0.328 $\pm$ 0.006 & 0.911 $\pm$ 0.002 & 0.830 $\pm$ 0.003 & \\ 
+CNN & SMILES Sequence + Protein Embedding & 0.452 $\pm$ 0.004 & 0.398 $\pm$ 0.009 & 0.892 $\pm$ 0.003 & 0.795 $\pm$ 0.005 & \\ 
+LSTM & SMILES Sequence + Protein Embedding & 0.498 $\pm$ 0.003 & 0.510 $\pm$ 0.005 & 0.863 $\pm$ 0.002 & 0.745 $\pm$ 0.004 & \\ 
+CNN-LSTM & SMILES Sequence + Protein Embedding & 0.519 $\pm$ 0.003 & 0.56 $\pm$ 0.009 & 0.849 $\pm$ 0.003 & 0.721 $\pm$ 0.006 & \\ 
+GAT-CNN & SMILES Sequence + Protein Embedding & 0.479 $\pm$ 0.003 & 0.442 $\pm$ 0.006 & 0.879 $\pm$ 0.002 & 0.772 $\pm$ 0.004 & \\ 
+$\mu_{Best}$ (Top 5 Methods) & All combinations  & 0.404 $\pm$ 0.002 & 0.313 $\pm$ 0.003 & 0.916 $\pm$ 0.001 & 0.840 $\pm$ 0.002 & \\ 

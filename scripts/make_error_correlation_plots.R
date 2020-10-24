@@ -70,15 +70,15 @@ conver_character <- function(df)
 }
 
 #Get data frames with errors
-glm_smiles_error_df <- get_error_info("../results/GLM_LS_Compound_LS_Protein_supervised_test_predictions.csv")
-rf_smiles_error_df <- get_error_info("../results/RF_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
-xgb_smiles_error_df <- get_error_info("../results/XGB_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
-svm_smiles_error_df <- get_error_info("../results/SVM_LS_Compound_LS_Proteinsupervised_test_predictions.csv")
+glm_smiles_error_df <- get_error_info("../results/glm_LS_Compound_LS_Protein_supervised_Test_predictions.csv")
+rf_smiles_error_df <- get_error_info("../results/rf_LS_Compound_LS_Protein_supervised_Test_predictions.csv")
+xgb_smiles_error_df <- get_error_info("../results/xgb_LS_Compound_LS_Protein_supervised_Test_predictions.csv")
+svm_smiles_error_df <- get_error_info("../results/svm_LS_Compound_LS_Protein_supervised_Test_predictions.csv")
 
-glm_mfp_error_df <- get_error_info("../results/GLM_MFP_Compound_LS_Protein_supervised_test_predictions.csv")
-rf_mfp_error_df <- get_error_info("../results/RF_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
-xgb_mfp_error_df <- get_error_info("../results/XGB_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
-svm_mfp_error_df <- get_error_info("../results/SVM_MFP_Compound_LS_Proteinsupervised_test_predictions.csv")
+glm_mfp_error_df <- get_error_info("../results/glm_MFP_Compound_LS_Protein_supervised_Test_predictions.csv")
+rf_mfp_error_df <- get_error_info("../results/rf_MFP_Compound_LS_Protein_supervised_Test_predictions.csv")
+xgb_mfp_error_df <- get_error_info("../results/xgb_MFP_Compound_LS_Protein_supervised_Test_predictions.csv")
+svm_mfp_error_df <- get_error_info("../results/svm_MFP_Compound_LS_Protein_supervised_Test_predictions.csv")
 
 cnn_error_df <- get_error_info("../results/cnn_supervised_Test_predictions.csv")
 lstm_error_df <- get_error_info("../results/lstm_supervised_Test_predictions.csv")

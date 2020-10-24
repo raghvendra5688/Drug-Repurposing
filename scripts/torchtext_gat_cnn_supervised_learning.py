@@ -86,23 +86,23 @@ class Net(torch.nn.Module):
         self.conv3 = GATConv(78*3, 78 * 4, dropout=0.1)
         self.fc_g1 = torch.nn.Linear(78*4, 256)
         self.bn2 = BatchNorm1d(256)
-        self.fc_g2 = Linear(256, 64)
+        self.fc_g2 = Linear(256, 128)
        
         
         ## Protein Sequences
-        n_filters = 128
+        n_filters = 512
         self.embedding_xt = nn.Embedding(21 + 1, 128)
         self.conv_xt_1 = nn.Conv1d(in_channels=2000, out_channels=n_filters, kernel_size=3)
-        self.conv_xt_2 = nn.Conv1d(in_channels= 128, out_channels= 128, kernel_size=5)
+        self.conv_xt_2 = nn.Conv1d(in_channels= 512, out_channels= 128, kernel_size=5)
         self.conv_xt_3 = nn.Conv1d(in_channels=128, out_channels=32, kernel_size=8) 
         self.fc1_xt1 = nn.Linear(32*11, 256)
         self.bn3 = BatchNorm1d(256)
-        self.fc1_xt2 = nn.Linear(256,64)
+        self.fc1_xt2 = nn.Linear(256,128)
 
 
-        self.fc12 = nn.Linear(2*64, 128)
-        self.fc22 = nn.Linear(128, 64)
-        self.out3 = nn.Linear(64, 1)
+        self.fc12 = nn.Linear(2*128, 128)
+        self.fc22 = nn.Linear(128, 128)
+        self.out3 = nn.Linear(128, 1)
         
 
     def forward(self, data):
