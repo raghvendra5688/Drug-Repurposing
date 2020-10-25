@@ -54,5 +54,5 @@ if __name__=='__main__':
 
     #Write output 
     ls_df.to_csv("../data/"+args.output,index=False)
-
+    print("Morgan fingerprints generation done")
 

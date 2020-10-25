@@ -21,7 +21,8 @@ import rankaggregation as ra
 
 #Get list of all compound-sars-cov-2 viral protein interactions 
 compound_viral_df = pd.read_csv("../data/COVID-19/sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_full_metadata.csv",header='infer')
-compound_viral_df
+print("Loaded compound viral protein interactions for SARS-COV-2 viral proteins")
+print(compound_viral_df.shape)
 
 
 #For a given viral protein get ranked list of drugs for a particular ML method
@@ -57,17 +58,17 @@ def per_protein_rank(ranked_list_proteins, protein_name):
 
 # +
 #Use compound_viral_df and results from ML methods to generate ranked list
-rf_smiles_predictions = pd.read_csv("../results/RF_LS_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
-svm_smiles_predictions = pd.read_csv("../results/SVM_LS_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
-xgb_smiles_predictions = pd.read_csv("../results/XGB_LS_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+rf_smiles_predictions = pd.read_csv("../results/rf_LS_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+svm_smiles_predictions = pd.read_csv("../results/svm_LS_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+xgb_smiles_predictions = pd.read_csv("../results/xgb_LS_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
 
-rf_mfp_predictions = pd.read_csv("../results/RF_MFP_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
-svm_mfp_predictions = pd.read_csv("../results/SVM_MFP_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
-xgb_mfp_predictions = pd.read_csv("../results/XGB_MFP_Compound_LS_Proteinsupervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+rf_mfp_predictions = pd.read_csv("../results/rf_MFP_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+svm_mfp_predictions = pd.read_csv("../results/svm_MFP_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+xgb_mfp_predictions = pd.read_csv("../results/xgb_MFP_Compound_LS_Protein_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
 
-cnn_predictions = pd.read_csv("../results/cnn_supervised_sars_cov_2_test_predictions.csv",header='infer',sep=",")
-lstm_predictions = pd.read_csv("../results/lstm_supervised_sars_cov_2_test_predictions.csv",header='infer',sep=",")
-cnn_lstm_predictions = pd.read_csv("../results/cnn_lstm_supervised_sars_cov_2_test_predictions.csv",header='infer',sep=",")
+cnn_predictions = pd.read_csv("../results/cnn_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+lstm_predictions = pd.read_csv("../results/lstm_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
+cnn_lstm_predictions = pd.read_csv("../results/cnn_lstm_supervised_sars_cov_2_predictions.csv",header='infer',sep=",")
 gat_cnn_predictions = pd.read_csv("../results/gat_cnn_supervised_sars_cov_2_predictions.csv",header='infer',sep=',')
 
 #Get a list of the unique proteins
@@ -161,22 +162,25 @@ def get_results_with_pchembl(final_combined_df,rev_drug_info,protein_name):
 final_combined_df = combined_df(xgb_smiles_predictions,svm_mfp_predictions,xgb_mfp_predictions,cnn_predictions,gat_cnn_predictions,all_proteins[0])
 output1_df = get_results_with_pchembl(final_combined_df,compound_viral_df,protein_mapping_dict[all_proteins[0]])
 output1_df.to_csv("../results/PL_Pro_Top_Ranked_Compounds.csv",index=False)
+print("Ranked list of top compounds for PL-PRO written")
 
 #For 3-CL Pro
 final_combined_df = combined_df(xgb_smiles_predictions,svm_mfp_predictions,xgb_mfp_predictions,cnn_predictions,gat_cnn_predictions,all_proteins[1])
 output2_df = get_results_with_pchembl(final_combined_df,compound_viral_df,protein_mapping_dict[all_proteins[1]])
 output2_df.to_csv("../results/3CL_Pro_Top_Ranked_Compounds.csv",index=False)
+print("Ranked list of top compounds for 3Cl-PRO written")
 
 #For Spike Protein
 final_combined_df = combined_df(xgb_smiles_predictions,svm_mfp_predictions,xgb_mfp_predictions,cnn_predictions,gat_cnn_predictions,all_proteins[2])
 output3_df = get_results_with_pchembl(final_combined_df,compound_viral_df,protein_mapping_dict[all_proteins[2]])
 output3_df.to_csv("../results/Spike_Pro_Top_Ranked_Compounds.csv",index=False)
+print("Ranked list of top compounds for Spike-PRO written")
 # +
 top_intersection_compounds = set(output1_df["compound_name"].values.tolist()[1:100]).intersection(set(output2_df["compound_name"].values.tolist()[1:100]), set(output3_df["compound_name"].values.tolist()[1:100]))
 
 top_intersection_compounds_df = output1_df.loc[output1_df['compound_name'].isin(list(top_intersection_compounds)),
                                                ["compound_name","standard_inchi_key","canonical_smiles"]]
 top_intersection_compounds_df.to_csv("../results/Top_Intersection_Compounds.csv",index=False)
+print("Writing the top commonly appearning compounds for the 3 viral proteins")
 # -
-
 

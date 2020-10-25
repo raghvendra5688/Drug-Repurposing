@@ -7,3 +7,5 @@ torchtext==0.6.0
 xgboost==0.90
 matplotlib==3.1.3
 seaborn==0.9.0
+tensorflow==1.14.0
+keras==2.3.1

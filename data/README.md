@@ -27,6 +27,21 @@ Here we provide the details of the steps followed to prepare the data for traini
 This results in `models/lstm_out/torchtext_checkpoint.pt` in the models folder.
 
 
+# Protein Autoencoder
+
+1. We download viral protein sequences from Uniprot and make them available at (https://drive.google.com/file/d/1nmqUZd5_RKxF_FJ9A_nkHIA9H0sevBMK/view?usp=sharing) which can be downloaded and should be put in the folder `data/Protein_Autoencoder`.
+
+2. To train the protein autoencode, we do the following:
+
+ * `python clean_proteins.py Full_Viral_proteins_with_Uniprot_IDs.csv clean_Uniprot_proteins.csv`
+
+ * `python encode_proteins.py clean_Uniprot_proteins.csv encoded_Uniprot_proteins.csv`
+ 
+ * `python train_protein_autoencoder.py encoded_Uniprot_proteins.csv ../../models/cnn_out/cnn_protein_autoencoder.h5`
+
+The file `cnn_protein_autoencoder_v2.h5` contains the autoencoder model 
+
+
 # Compound Virus Activities for End-to-End Deep Learning Models
 
 We perform search on Pubmed (NCBI) to generate a good AID (Assay Id) list:
@@ -101,16 +116,31 @@ To generate the vector representation of the compounds using Morgan Fingerprints
 
 To generate the vector representation of the viral proteins, we need to follow the below mentioned steps:
 
+1. For training/test/SARS-COV-2 set, do the following:
 
+  * Run `cd scripts`
+ 
+  * Run `python ../data/Protein_Autoencoder/clean_proteins.py ../data/<type>_Compound_Viral_interactions_for_Supervised_Learning.csv ../data/clean_<type>_proteins.csv`
 
+  * Run `python ../data/Protein_Autoencoder/encode_proteins.py ../data/clean_<type>_proteins.csv ../data/encoded_<type>_proteins.csv`
+
+  * Run `python ../data/Protein_Autoencoder/generate_PLS.py ../data/encoded_<type>_proteins.csv ../data/<type>_Protein_LS.csv ../models/cnn_out/cnn_protein_autoencoder.h5`
+
+  * Run `rm ../clean_<type>_proteins.csv ../encoded_<type>_proteins.csv`
+
+Here `<type>` can be either `Train` or `Test` or `sars_cov_2`.
 
 To produce the training and test set with vector representation of compounds from SMILES autoencoder/Morgan Fingerprints and latent space representation of viral proteins, we take the following steps:
 
 1. Run `cd scripts`
 
-2. Run `python train_valid_test_supervised learning_on_ls.py` to produce `Train_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` for SMILES autoencoder + protein autoencoder embedding combination for train and test set respectively. 
+2. Run `python train_valid_test_supervised_learning_on_ls.py <type>_Compound_Viral_interactions_for_Supervised_Learning.csv <type>_Compound_LS.csv <type>_Compound_MFP.csv <type>_Protein_LS.csv <type>_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv <type>_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` 
 
-   Similarly, we also obtain `Train_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` and `Test_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` for Morgan fingerprints + protein autoencoder embedding combination for train and test set respectively. All these files are produced in the `data` folder.
+Here `<type>` can be either `Train` or `Test`.
+
+Here `<type>_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` corresponds to `<type>` file containing SMILES embedding + Protein embedding.
+
+Similarly, `<type>_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` corresponds to `<type>` file containing Morgan Fingerprints + Protein embedding.
 
 
 # Compound Virus Activities Prediction for SARS-COV-2 Viral proteins
@@ -154,8 +184,10 @@ These files are available in the `scripts` folder and more details to run are av
 
     * Run `python ls_generator_morgan.py --input sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv --output sars_cov_2_Compound_MFP.csv`
 
-    * Run 
+    * Follow instructions for generating Proein embedding as detailed earlier to generate `sars_cov_2_Protein_LS.csv` 
 
-    * Run `python test_sars_cov_2_supervised_learning_on_ls.py` to produce `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv` (for SMILES embedding + protein embedding)  and `sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` (for Morgan Fingerprints + protein embedding).
+    * Run `python test_sars_cov_2_supervised_learning_on_ls.py sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning.csv sars_cov_2_Compound_LS.csv sars_cov_2_Compound_MFP.csv sars_cov_2_Protein_LS.csv sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_LS_LS.csv sars_cov_2_Compound_Viral_interactions_for_Supervised_Learning_with_MFP_LS.csv` 
+
+The two last arguments are the output files corresponding to SMILES Embedding + Protein Embedding and Morgan Fingerprints + Protein Embedding respectively.
 
     * We can now run the state-of-the-art ML techniques like GLM, RF, SVM and XGBoost as mentioned in the **README** of our repository.

@@ -245,3 +245,4 @@ if __name__=='__main__':
     
     #Write output 
     ls_df.to_csv("../data/"+args.output,index=False)
+    print("SMILES embedding generation done")
