@@ -29,17 +29,19 @@ This results in `models/lstm_out/torchtext_checkpoint.pt` in the models folder.
 
 # Protein Autoencoder
 
-1. We download viral protein sequences from Uniprot and make them available at (https://drive.google.com/file/d/1nmqUZd5_RKxF_FJ9A_nkHIA9H0sevBMK/view?usp=sharing) which can be downloaded and should be put in the folder `data/Protein_Autoencoder`.
+1. We download 2,684,774 viral protein sequences from Uniprot and make them available at (https://data.mendeley.com/datasets/8rrwnbcgmx/2) which can be downloaded and should be put in the folder `data/Protein_Autoencoder`.
 
 2. To train the protein autoencode, we do the following:
 
  * `python clean_proteins.py Full_Viral_proteins_with_Uniprot_IDs.csv clean_Uniprot_proteins.csv`
 
+This results in 2,658,225 viral protein sequences whose sequence length is <=2000.
+
  * `python encode_proteins.py clean_Uniprot_proteins.csv encoded_Uniprot_proteins.csv`
  
  * `python train_protein_autoencoder.py encoded_Uniprot_proteins.csv ../../models/cnn_out/cnn_protein_autoencoder.h5`
 
-The file `cnn_protein_autoencoder_v2.h5` contains the autoencoder model 
+The file `cnn_protein_autoencoder.h5` contains the autoencoder model 
 
 
 # Compound Virus Activities for End-to-End Deep Learning Models

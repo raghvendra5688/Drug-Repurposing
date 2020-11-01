@@ -1,4 +1,5 @@
 compound_name,standard_inchi_key,canonical_smiles
+Lopinavir,KJHKTHWMRKYKJE-SUGCFTRWSA-N,Cc1cccc(C)c1OCC(=O)NC(Cc1ccccc1)C(O)CC(Cc1ccccc1)NC(=O)C(C(C)C)N1CCCNC1=O
 Ritonavir,NCDNCNXCDXHOMX-XGKFQTDJSA-N,CC(C)c1nc(CN(C)C(=O)NC(C(=O)NC(Cc2ccccc2)CC(O)C(Cc2ccccc2)NC(=O)OCc2cncs2)C(C)C)cs1
 PALINAVIR,RXBWRFDZXRAEJT-SZNOJMITSA-N,CC(C)C(NC(=O)c1ccc2ccccc2n1)C(=O)NC(Cc1ccccc1)C(O)CN1CCC(OCc2ccncc2)CC1C(=O)NC(C)(C)C
 Simeprevir,JTZZSQYMACOLNN-VDWJNHBNSA-N,COc1ccc2c(OC3CC4C(=O)NC5(C(=O)NS(=O)(=O)C6CC6)CC5C=CCCCCN(C)C(=O)C4C3)cc(-c3nc(C(C)C)cs3)nc2c1C

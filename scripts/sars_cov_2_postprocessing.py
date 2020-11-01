@@ -176,11 +176,9 @@ output3_df = get_results_with_pchembl(final_combined_df,compound_viral_df,protei
 output3_df.to_csv("../results/Spike_Pro_Top_Ranked_Compounds.csv",index=False)
 print("Ranked list of top compounds for Spike-PRO written")
 # +
-top_intersection_compounds = set(output1_df["compound_name"].values.tolist()[1:100]).intersection(set(output2_df["compound_name"].values.tolist()[1:100]), set(output3_df["compound_name"].values.tolist()[1:100]))
+top_intersection_compounds = set(output1_df["compound_name"].values.tolist()[0:100]).intersection(set(output2_df["compound_name"].values.tolist()[0:100]), set(output3_df["compound_name"].values.tolist()[0:100]))
 
 top_intersection_compounds_df = output1_df.loc[output1_df['compound_name'].isin(list(top_intersection_compounds)),
                                                ["compound_name","standard_inchi_key","canonical_smiles"]]
 top_intersection_compounds_df.to_csv("../results/Top_Intersection_Compounds.csv",index=False)
 print("Writing the top commonly appearning compounds for the 3 viral proteins")
-# -
-
