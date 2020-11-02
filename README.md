@@ -1,5 +1,7 @@
 # A Consensus of In-silico Sequence-based Modeling Techniques for Compound-Viral Protein Activity Prediction for SARS-COV-2  
 
+The guidelines to setup the environment and all the packages required to run our framework is available in `installation_guide.md` file
+
 Here we provide the scripts, data, model and results for predicting compound-viral activity scores using our pipeline.
 
 Details about how to obtain the training and test set for the predictive models is provided in the data folder.
