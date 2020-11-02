@@ -147,7 +147,7 @@ if __name__ == '__main__':
                 counter = 0
                 print("Current Val. Loss: %.3f better than prev Val. Loss: %.3f " %(valid_loss,best_valid_loss))
                 best_valid_loss = valid_loss
-                torch.save(model.state_dict(), '../models/torchtext_checkpoint.pt')
+                torch.save(model.state_dict(), '../models/lstm_out/torchtext_checkpoint.pt')
             else:
                 counter+=1
             print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
