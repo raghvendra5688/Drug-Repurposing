@@ -81,7 +81,7 @@ def run_smiles_generator(test_file):
             fields=datafields)
 
     #Split the dataset into train and validation set
-    train_data,valid_data = train.split(split_ratio=0.8)
+    train_data,valid_data = train.split(split_ratio=0.99)
 
 
     print(f"Number of examples: {len(train_data.examples)}")
