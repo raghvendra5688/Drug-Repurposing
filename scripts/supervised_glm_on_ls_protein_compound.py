@@ -35,7 +35,7 @@ from sklearn import neural_network
 from sklearn import metrics
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
-#from sklearn.utils.fixes import loguniform
+from sklearn.utils.fixes import loguniform
 import scipy
 import argparse
 

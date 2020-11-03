@@ -135,10 +135,10 @@ if __name__ == '__main__':
         sort_within_batch = True
         )
 
-    for i,batch in enumerate(train_iterator):
-        print("Valid Sequence Shape: ",str(batch.Sequence.shape))
-        print("Valid canonical_smiles Shape: ",str(batch.canonical_smiles.shape))
-        print("Valid pchembl Shape: ",str(batch.pchembl_value.shape))
+    #for i,batch in enumerate(train_iterator):
+    #    print("Valid Sequence Shape: ",str(batch.Sequence.shape))
+    #    print("Valid canonical_smiles Shape: ",str(batch.canonical_smiles.shape))
+    #    print("Valid pchembl Shape: ",str(batch.pchembl_value.shape))
 
     # +
     PROTEIN_INPUT_DIM = len(TEXT1.vocab)
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     print(f'| Best Valid Loss: {valid_loss:.3f} | Best Valid PPL: {math.exp(valid_loss):7.3f} |')
 
     test_loss = evaluate(model, test_iterator, criterion)
-    print(f'| Test Loss: {test_loss: .3f} | Best Test PPL: {math.exp(test_loss):7.3f} |')
+    #print(f'| Test Loss: {test_loss: .3f} | Best Test PPL: {math.exp(test_loss):7.3f} |')
 
     #fout=open("cnn_out/cnn_supervised_loss_plot.csv","w")
     #for i in range(len(train_loss_list)):
