@@ -3,7 +3,7 @@ library(ggplot2)
 library(ggthemes)
 warnings("off")
 
-setwd(".")
+setwd("/export/cse02/SC2/COVID_19/Drug-Repurposing/scripts/")
 
 get_error_info <- function(filename)
 {
@@ -140,9 +140,9 @@ g3 <- ggplot(predictions_df_revised,aes(Range,Values,colour=Method)) + geom_poin
         legend.text = element_text(size=16))
 
 #Save the image on disk
-ggsave(filename="../results/Fitting_plot_for_pchembl_values.pdf",plot = g3,
-       device=pdf(),height=8,width=10,dpi = 300)
-dev.off()
+#ggsave(filename="../results/Fitting_plot_for_pchembl_values.pdf",plot = g3,
+#       device=pdf(),height=8,width=10,dpi = 300)
+#dev.off()
 
 pdf(file="../results/GLM_SMILES_Residual_plot_for_pchembl_values.pdf",width=12,height=7,pointsize=16)
 get_correlation_plot(glm_smiles_error_df,"GLM (SMILES)")
