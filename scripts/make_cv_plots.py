@@ -87,9 +87,9 @@ xgb_LS_LS_r2_scores = get_cv_results(xgb_LS_LS, xgb_LS_LS_index, [], 5)
 xgb_MFP_LS = load_model("../models/xgb_models/xgb_MFP_Compound_LS_Protein_regressor_gs.pk")
 xgb_MFP_LS_index = np.argmax(xgb_MFP_LS.cv_results_["mean_test_score"])
 xgb_MFP_LS_r2_scores = get_cv_results(xgb_MFP_LS, xgb_MFP_LS_index, [], 5)
+# -
 
 
-# +
 all_info = [glm_LS_LS_r2_scores, glm_MFP_LS_r2_scores, rf_LS_LS_r2_scores, rf_MFP_LS_r2_scores,
             svm_LS_LS_r2_scores, svm_MFP_LS_r2_scores, xgb_LS_LS_r2_scores, xgb_MFP_LS_r2_scores]
 cv_df = pd.DataFrame(all_info)
@@ -110,7 +110,9 @@ plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 plt.tight_layout()
 
-f.savefig("../results/CV_Comparison.pdf", bbox_inches='tight')
+plt.savefig("../results/CV_Comparison.pdf", bbox_inches='tight')
 # -
+cv_df.mean()
+
 
 

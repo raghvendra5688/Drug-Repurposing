@@ -1,6 +1,7 @@
 library(data.table)
 library(ggplot2)
 library(ggthemes)
+library(viridis)
 warnings("off")
 
 setwd("/export/cse02/SC2/COVID_19/Drug-Repurposing/scripts/")
@@ -116,14 +117,20 @@ cnn_lstm_error_df <- cnn_lstm_error_df[order(cnn_lstm_error_df[,1],cnn_lstm_erro
 gan_cnn_error_df <- gan_cnn_error_df[order(gan_cnn_error_df[,1],gan_cnn_error_df[,2]),]
 
 #Make data frame with predictions
+sorted_by_labels_ids <- order(cnn_error_df$labels)
+sorted_labels <- cnn_error_df[sorted_by_labels_ids,]$labels
 N <- nrow(cnn_error_df)
-predictions_df <- data.frame(Method = c(rep("True",N),rep("XGB (SMILES)",N),rep("SVM (MFP)",N),
+predictions_df <- data.frame(Method = c(#rep("True",N),
+                                        rep("XGB (SMILES)",N),rep("SVM (MFP)",N),
                                         rep("XGB (MFP)",N),rep("CNN",N),rep("GAT-CNN",N)),
-                  Values = c(cnn_error_df$labels,
-                             xgb_smiles_error_df$predictions,svm_mfp_error_df$predictions,
-                             xgb_mfp_error_df$predictions,cnn_error_df$predictions,
-                             gan_cnn_error_df$predictions),
-                  Range = c(c(1:N),c(1:N),c(1:N),c(1:N),c(1:N),c(1:N)))
+                  Values = c(#cnn_error_df$labels,
+                             sorted_labels-xgb_smiles_error_df[sorted_by_labels_ids,]$predictions,
+                             sorted_labels-svm_mfp_error_df[sorted_by_labels_ids,]$predictions,
+                             sorted_labels-xgb_mfp_error_df[sorted_by_labels_ids,]$predictions,
+                             sorted_labels-cnn_error_df[sorted_by_labels_ids,]$predictions,
+                             sorted_labels-gan_cnn_error_df[sorted_by_labels_ids,]$predictions),
+                  Range = c(#c(1:N),
+                            c(1:N),c(1:N),c(1:N),c(1:N),c(1:N)))
 
 predictions_df$Values <- as.numeric(as.vector(predictions_df$Values))
 predictions_df$Range <- as.numeric(as.vector(predictions_df$Range))
@@ -131,18 +138,21 @@ sample <- seq(1,N,30)
 predictions_df_revised <- predictions_df[predictions_df$Range%in% sample,]
 
 g3 <- ggplot(predictions_df_revised,aes(Range,Values,colour=Method)) + geom_point() +
-  geom_smooth(se=FALSE,method=lm,formula=y ~ splines::bs(x, 12))+
-  xlab("Test Samples") + ylab("Pchembl Value") + theme_bw() +
-  theme(axis.text.x = element_text(size=18),axis.text.y = element_text(size=18),
-        axis.title.x = element_text(size=22),
-        axis.title.y = element_text(size=22),
-        legend.title = element_text(size=18),
-        legend.text = element_text(size=16))
+  geom_smooth(se=TRUE,method=loess,formula=y ~ x)+
+  scale_color_brewer(palette = "Set2")+
+  xlab("Ordered Test Samples") + ylab("Residual pChEMBL Value") + theme_bw() + 
+  ggtitle("Comparison of difference in True vs Predicted pChEMBL values for Top 5 best performing ML models")+
+  theme(axis.text.x = element_text(size=16),axis.text.y = element_text(size=16),
+        axis.title.x = element_text(size=18),
+        axis.title.y = element_text(size=18),
+        title = element_text(size=18),
+        legend.title = element_text(size=16),
+        legend.text = element_text(size=14))
 
 #Save the image on disk
-#ggsave(filename="../results/Fitting_plot_for_pchembl_values.pdf",plot = g3,
-#       device=pdf(),height=8,width=10,dpi = 300)
-#dev.off()
+ggsave(filename="../results/Fitting_plot_for_pchembl_values_v2.pdf",plot = g3,
+       device=pdf(),height=8,width=16,dpi = 300)
+dev.off()
 
 pdf(file="../results/GLM_SMILES_Residual_plot_for_pchembl_values.pdf",width=12,height=7,pointsize=16)
 get_correlation_plot(glm_smiles_error_df,"GLM (SMILES)")
