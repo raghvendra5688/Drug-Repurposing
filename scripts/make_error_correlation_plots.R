@@ -2,6 +2,7 @@ library(data.table)
 library(ggplot2)
 library(ggthemes)
 library(viridis)
+library(reshape2)
 warnings("off")
 
 setwd("/export/cse02/SC2/COVID_19/Drug-Repurposing/scripts/")
@@ -134,25 +135,48 @@ predictions_df <- data.frame(Method = c(#rep("True",N),
 
 predictions_df$Values <- as.numeric(as.vector(predictions_df$Values))
 predictions_df$Range <- as.numeric(as.vector(predictions_df$Range))
-sample <- seq(1,N,30)
-predictions_df_revised <- predictions_df[predictions_df$Range%in% sample,]
+#sample <- seq(1,N,30)
+#predictions_df_revised <- predictions_df[predictions_df$Range%in% sample,]
 
 g3 <- ggplot(predictions_df_revised,aes(Range,Values,colour=Method)) + geom_point() +
   geom_smooth(se=TRUE,method=loess,formula=y ~ x)+
   scale_color_brewer(palette = "Set2")+
   xlab("Ordered Test Samples") + ylab("Residual pChEMBL Value") + theme_bw() + 
-  ggtitle("Comparison of difference in True vs Predicted pChEMBL values for Top 5 best performing ML models")+
-  theme(axis.text.x = element_text(size=16),axis.text.y = element_text(size=16),
-        axis.title.x = element_text(size=18),
-        axis.title.y = element_text(size=18),
-        title = element_text(size=18),
-        legend.title = element_text(size=16),
-        legend.text = element_text(size=14))
+#  ggtitle("Comparison of difference in True vs Predicted pChEMBL values for Top 5 best performing ML models")+
+  theme(axis.text.x = element_text(size=22),axis.text.y = element_text(size=22),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        title = element_text(size=24),
+        legend.title = element_text(size=18),
+        legend.text = element_text(size=18))
 
 #Save the image on disk
 ggsave(filename="../results/Fitting_plot_for_pchembl_values_v2.pdf",plot = g3,
        device=pdf(),height=8,width=16,dpi = 300)
 dev.off()
+
+#Get the training set labels
+train_df <- fread("../data/Train_Compound_Viral_interactions_for_Supervised_Learning.csv",header=TRUE,sep=",")
+train_pchembl_scores <- train_df$pchembl_value
+train_pchembl_scores <- sort(train_pchembl_scores)
+
+x <- list(Train=train_pchembl_scores, Test = sorted_labels)
+data<- melt(x)
+g4 <- ggplot(data,aes(x=value, fill=L1)) + geom_density(alpha=0.5) +
+      xlab("pChEMBL value") + ylab("Density") + theme_bw() +
+      labs(fill='Data Type') +
+      theme(axis.text.x = element_text(size=22),axis.text.y = element_text(size=22),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        title = element_text(size=24),
+        legend.title = element_text(size=18),
+        legend.text = element_text(size=18))
+
+ggsave(filename="../results/Fitting_plot_for_pchembl_values_v3.pdf",plot = g4,
+       device=pdf(),height=8,width=16,dpi = 300)
+dev.off()
+
+
 
 pdf(file="../results/GLM_SMILES_Residual_plot_for_pchembl_values.pdf",width=12,height=7,pointsize=16)
 get_correlation_plot(glm_smiles_error_df,"GLM (SMILES)")
