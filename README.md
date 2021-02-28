@@ -1,4 +1,4 @@
-# A Consensus of In-silico Sequence-based Modeling Techniques for Compound-Viral Protein Activity Prediction for SARS-COV-2  
+# A Modelling Framework for Embedding-based Predictions for Compound-Viral Protein Activity
 
 The guidelines to setup the environment and all the packages required to run our framework is available in `installation_guide.md` file
 
